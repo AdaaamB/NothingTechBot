@@ -147,7 +147,7 @@ for comment in subreddit.stream.comments(skip_existing=True):
         continue
 
     # check for !thanks in the body
-    if "!thanks" in comment.body:
+    if "!thanks" in comment.body.lower():
       # check if the parent comment author is the bot
       if comment.parent().author.name == reddit.user.me():
           response = f"Aw, thanks u/{comment.author.name}"
