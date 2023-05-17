@@ -1,22 +1,26 @@
-import praw, os, re
+import praw, os, re, time
 import pandas as pd
 from datetime import date
 
-print("Running")
-
-reddit = praw.Reddit(
+#init
+try:
+  reddit = praw.Reddit(
     client_id=os.environ["client_id"],
     client_secret=os.environ["client_secret"],
     username="adbobot",
     password=os.environ["reddit_password"],
     user_agent="PyEng Bot 0.1",
-)
-
-subreddit = reddit.subreddit("adbotest")
-moderators = subreddit.moderator()
-wiki_page_name = "index"
-wiki_page = subreddit.wiki[wiki_page_name]
-wiki_contents = wiki_page.content_md
+  )
+  
+  retry_delay = 30  
+  subreddit = reddit.subreddit("adbotest")
+  moderators = subreddit.moderator()
+  wiki_page_name = "index"
+  wiki_page = subreddit.wiki[wiki_page_name]
+  wiki_contents = wiki_page.content_md
+  print("Init complete")
+except Exception as e:
+  print(f"Encountered an exception during startup: {e}")
 
 # check if they have a flair; if it's a star flair or a custom one
 def handle_current_flair(user, new_points):
@@ -125,62 +129,87 @@ def thank_user(user):
   df = get_wiki_leaderboard()
   user_exists_in_leaderboard = df[df["Username"] == f"u/{user}"]
   if not user_exists_in_leaderboard.empty:
-      print("User exists in leaderboard, so incrementing existing points")
+      print(f"User: {user} exists in leaderboard, so incrementing existing points")
       level = user_exists_in_leaderboard["Level"].iloc[0]
       last_star_date = user_exists_in_leaderboard["Last Star Date"].iloc[0]
       points = int(level.split(" ")[-1]) + 1
   else:
-      print("User doesn't exist in leaderboard, so points = 1")
+      print(f"User: {user} doesn't exist in leaderboard, so points = 1")
       points = 1
   user_flair_text = handle_current_flair(user, points)
   set_wiki_leaderboard(df, not user_exists_in_leaderboard.empty, user, points)
   set_flair(user_flair_text)
 
-# for all comments in the subreddit
-for comment in subreddit.stream.comments(skip_existing=True):
-    print("Found comment")
-    # check if the comment author is the same as the parent comment author, OP is replying to themselves
-    if comment.parent().author == comment.author:
-        print("OP is replying to themselves")
-        response = f"You can't thank yourself."
-        comment.reply(response)
-        continue
-
-    # check for !thanks in the body
-    if "!thanks" in comment.body.lower():
-      # check if the parent comment author is the bot
-      if comment.parent().author.name == reddit.user.me():
-          response = f"Aw, thanks u/{comment.author.name}"
-          comment.reply(response)
-          print("User thanked bot")
-
-      # check if the author is a mod
-      elif comment.author in moderators:
-          print(f"!thanks giver is a mod: {comment.author.name}")
-          user = reddit.redditor(comment.parent().author.name)
-          thank_user(user)
-  
-      # check if the submission flair text = "Support" and that the comment is from OP
-      elif comment.submission.link_flair_text == "Support" and comment.author == comment.submission.author:
-          user = reddit.redditor(comment.parent().author.name)
-          has_been_thanked = False
-          # get the parent replies to the !thanks
-          for parent_reply in comment.parent().replies:
-              print(f"Found reply: {parent_reply.body} by {parent_reply.author}")
-              # find the !thanks and its children
-              if "!thanks" in parent_reply.body:
-                  for child_reply in parent_reply.replies:
-                      print("Found !thanks - checking if has been thanked")
+while True:
+  try:
+    # for all comments in the subreddit
+    for comment in subreddit.stream.comments(skip_existing=True):
+        print("Found comment")
+        # check for !thanks in the body
+        if "!thanks" in comment.body.lower():
+          # check if the comment author is the same as the parent comment author, OP is replying to themselves
+          if comment.parent().author == comment.author:
+              print("OP is replying to themselves")
+              response = f"You can't thank yourself."
+              comment.reply(response)
+              continue
+          
+          # check if the parent comment author is the bot
+          if comment.parent().author.name == reddit.user.me():
+              response = f"Aw, thanks u/{comment.author.name}"
+              comment.reply(response)
+              print("User thanked bot")
+              continue
+    
+          # check if the author is a mod
+          elif comment.author in moderators:
+              print(f"!thanks giver is a mod: {comment.author.name}")
+              user = reddit.redditor(comment.parent().author.name)
+              thank_user(user)
+      
+          # check if the submission flair text = "Support" and that the comment is from OP
+          elif comment.submission.link_flair_text == "Support" and comment.author == comment.submission.author:
+              user = reddit.redditor(comment.parent().author.name)
+              has_been_thanked = False
+              # get the parent replies to the !thanks to check if they already thanked this comment
+              # for parent_reply in comment.parent().replies:
+              #     print(f"Found reply: {parent_reply.body} by {parent_reply.author}")
+              #     # find the !thanks and its children
+              #     if "!thanks" in parent_reply.body:
+              #         for child_reply in parent_reply.replies:
+              #             print("Found !thanks - checking if has been thanked")
+              #             # check if there is already a thanks registered by the bot
+              #             if child_reply.author == reddit.user.me() and re.search(r"Thanks for .* registered\.", child_reply.body):
+              #                 has_been_thanked = True
+              #                 print("!thanks already given")
+              #                 break
+            
+              # get all comments in the thread to check if thanks has already been given to this user
+              for comment_in_submission in comment.submission.comments.replace_more(limit=0).list():
+                # check for !thanks from OP
+                if "!thanks" in comment_in_submission.body.lower() and comment.author == comment.submission.author:
+                  # get the user who has already been thanked
+                  previously_thanked_user = reddit.redditor(comment_in_submission.parent.author.name)
+                  # if thanked user is the same as the newly thanked user
+                  if previously_thanked_user == user:
+                    for child_reply in comment_in_submission.replies:
+                      print("Found !thanks for user - checking if has been thanked")
                       # check if there is already a thanks registered by the bot
                       if child_reply.author == reddit.user.me() and re.search(r"Thanks for .* registered\.", child_reply.body):
                           has_been_thanked = True
                           print("!thanks already given")
                           break
-          # if they haven't already been thanked
-          if not has_been_thanked:
-              thank_user(user)
-          else:
-              response = f"You've already thanked this person, surely once is enough?!"
-              comment.reply(response)
-              print("Thanks not added as OP already thanked this user")
-  
+                  
+              # if they haven't already been thanked
+              if not has_been_thanked:
+                  thank_user(user)
+              else:
+                  response = f"You can only thank someone once per thread."
+                  comment.reply(response)
+                  print("Thanks not added as OP already thanked this user")
+  except praw.exceptions.APIException as e:
+    print(f"Encountered an API exception: {e}")
+    time.sleep(retry_delay)
+  except Exception as e:
+    print(f"Encountered an exception: {e}")
+    time.sleep(retry_delay)
