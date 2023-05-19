@@ -1,26 +1,55 @@
-import praw, os, re, time
+import praw, re, time, json
 import pandas as pd
 from datetime import date
 
+### TO DO:
+# change "adbotest" subreddit
+# add NothingTechBot to https://www.reddit.com/prefs/apps/
+# change "adbobot" username
+# change "adbobot" password
+# change support_flair_template_id for support
+
 #init
 try:
+  with open('config.json') as config_file:
+    config = json.load(config_file)
+    config_client_id = config.get('client_id')
+    config_client_secret = config.get('client_secret')
+    reddit_password = config.get('reddit_password')
+    subreddit_name = config.get('subreddit')
+    solved_flair_template_id = config.get('solved_flair_template_id')
+    thanks_wiki_page_name = config.get('thanks_wiki_page')
+    support_regex_match_wiki_page_name = config.get('support_regex_match_wiki_page')
+    support_regex_exclude_wiki_page_name = config.get('support_regex_exclude_wiki_page')
+    print("Config read")
+
   reddit = praw.Reddit(
-    client_id=os.environ["client_id"],
-    client_secret=os.environ["client_secret"],
-    username="adbobot",
-    password=os.environ["reddit_password"],
-    user_agent="PyEng Bot 0.1",
+    client_id = config_client_id,
+    client_secret = config_client_secret,
+    username = "adbobot",
+    password = reddit_password,
+    user_agent = "PyEng Bot 0.1",
   )
   
   retry_delay = 30  
-  subreddit = reddit.subreddit("adbotest")
+  subreddit = reddit.subreddit(subreddit_name)
   moderators = subreddit.moderator()
-  wiki_page_name = "index"
-  wiki_page = subreddit.wiki[wiki_page_name]
-  wiki_contents = wiki_page.content_md
+  
+  thanks_wiki_page = subreddit.wiki[thanks_wiki_page_name]
+  thanks_wiki_contents = thanks_wiki_page.content_md
+  
+  support_regex_match_wiki_page = subreddit.wiki[support_regex_match_wiki_page_name]
+  support_regex_exclude_wiki_page = subreddit.wiki[support_regex_exclude_wiki_page_name]
+  support_match_patterns = support_regex_match_wiki_page.content_md.strip().split('\n')
+  support_exclude_patterns = support_regex_exclude_wiki_page.content_md.strip().split('\n')
+  
   print("Init complete")
 except Exception as e:
   print(f"Encountered an exception during startup: {e}")
+
+def send_reply(response):
+  print(f"Sending reply: {response}")
+  comment.reply(response)
 
 # check if they have a flair; if it's a star flair or a custom one
 def handle_current_flair(user, new_points):
@@ -59,18 +88,16 @@ def handle_current_flair(user, new_points):
 
 # set flair if not custom
 def set_flair(user_flair_text):
+    points = user_flair_text.split()[-1]
+    point_text = "point" if points == "1" else "points"
     if user_flair_text == "custom":
-        response = f"Thank you for registering your thanks, however this user has a custom flair so their level is not displayed."
-        comment.reply(response)
+        response = f"Thanks for u/{user} registered. They now have {str(points)} {point_text}! However, this user has a custom flair so their level is not displayed."
+        send_reply(response)
         print("Custom flair, thanks not added")
     else:
         subreddit.flair.set(user, text=user_flair_text, flair_template_id=None)
-        points = user_flair_text.split()[-1]
-        point_text = "point" if points == "1" else "points"
-        response = (
-            f"Thanks for u/{user} registered. They now have {str(points)} {point_text}!"
-        )
-        comment.reply(response)
+        response = f"Thanks for u/{user} registered. They now have {str(points)} {point_text}!"
+        send_reply(response)
         print("Thanks added")
 
 # extract the numeric value from the Level column
@@ -84,7 +111,7 @@ def get_level_num(level):
 # get the wiki leaderboard
 def get_wiki_leaderboard():
     # split markdown table string into rows
-    rows = wiki_contents.strip().split("\n")[4:]
+    rows = thanks_wiki_contents.strip().split("\n")[4:]
     # split each row into cells
     cells = [[cell.strip() for cell in row.split("|")[1:-1]] for row in rows]
     # create a pandas DataFrame from cells
@@ -122,7 +149,7 @@ def set_wiki_leaderboard(df, user_exists_in_leaderboard, user, points):
         f"This page is updated by a robot. Do not edit. *Last update*: {today.strftime('%Y-%m-%d')}\n\n" + df.to_markdown(index=False)
     )
     # overwrite subreddit wiki page with new markdown
-    subreddit.wiki[wiki_page_name].edit(content=markdown_table)
+    subreddit.wiki[thanks_wiki_page_name].edit(content=markdown_table)
 
 # perform actions to thank - get wiki points, handle flair, set flair, set leaderboard
 def thank_user(user):
@@ -145,19 +172,31 @@ while True:
     # for all comments in the subreddit
     for comment in subreddit.stream.comments(skip_existing=True):
         print("Found comment")
+        # check if the comment is the bot's
+        if comment.author.name == reddit.user.me():
+          continue
+      
+        # check if the comment body matches any of the match patterns if the flair text = "Support" and the comment is from OP
+        if comment.submission.link_flair_text == "Support" and comment.author == comment.submission.author and any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_match_patterns):
+          # check if the comment body does not match any of the excluded patterns
+          if not any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_exclude_patterns):
+            print("Matched: ", comment.body)
+            response = f"It seems like you might've resolved your issue. If so, please update the flair to 'Solved' or reply !solved\n\nIf you'd like to thank anyone for helping you, reply !thanks to *their* comment."
+            send_reply(response)
+      
         # check for !thanks in the body
         if "!thanks" in comment.body.lower():
           # check if the comment author is the same as the parent comment author, OP is replying to themselves
           if comment.parent().author == comment.author:
               print("OP is replying to themselves")
               response = f"You can't thank yourself."
-              comment.reply(response)
+              send_reply(response)
               continue
           
           # check if the parent comment author is the bot
           if comment.parent().author.name == reddit.user.me():
               response = f"Aw, thanks u/{comment.author.name}"
-              comment.reply(response)
+              send_reply(response)
               print("User thanked bot")
               continue
     
@@ -167,8 +206,8 @@ while True:
               user = reddit.redditor(comment.parent().author.name)
               thank_user(user)
       
-          # check if the submission flair text = "Support" and that the comment is from OP
-          elif comment.submission.link_flair_text == "Support" and comment.author == comment.submission.author:
+          # check if the submission flair text = "Support" or "Solved" and that the comment is from OP
+          elif (comment.submission.link_flair_text == "Support" or comment.submission.link_flair_text == "Solved") and comment.author == comment.submission.author:
               user = reddit.redditor(comment.parent().author.name)
               has_been_thanked = False
               # get the parent replies to the !thanks to check if they already thanked this comment
@@ -205,8 +244,16 @@ while True:
                   thank_user(user)
               else:
                   response = f"You can only thank someone once per thread."
-                  comment.reply(response)
-                  print("Thanks not added as OP already thanked this user")
+                  send_reply(response)
+                  print("Thanks not added as OP already thanked this user in this thread.")
+
+        # check for !solved in the body of a "Support" flaired submission
+        if "!solved" in comment.body.lower() and comment.submission.link_flair_text == "Support":
+          print("!solved found, changing flair")
+          subreddit.flair.select(comment.submission.id, solved_flair_template_id)
+          response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'."
+          send_reply(response)
+
   except praw.exceptions.APIException as e:
     print(f"Encountered an API exception: {e}")
     time.sleep(retry_delay)

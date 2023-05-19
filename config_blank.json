@@ -1,0 +1,12 @@
+{
+    "client_id": "",
+    "client_secret": "",
+    "reddit_password": "",
+
+    "subreddit": "adbotest",
+    "solved_flair_template_id": "ba9d946a-e8e4-11ed-ad9e-7e7ed620b423",
+    "thanks_wiki_page": "index",
+    "support_regex_match_wiki_page": "support_regex_match",
+    "support_regex_exclude_wiki_page": "support_regex_exclude"
+}
+  
