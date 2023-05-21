@@ -17,6 +17,7 @@ try:
     config_client_secret = config.get('client_secret')
     reddit_password = config.get('reddit_password')
     subreddit_name = config.get('subreddit')
+    support_flair_template_id = config.get('support_flair_template_id')
     solved_flair_template_id = config.get('solved_flair_template_id')
     thanks_wiki_page_name = config.get('thanks_wiki_page')
     support_regex_match_wiki_page_name = config.get('support_regex_match_wiki_page')
@@ -61,9 +62,9 @@ def handle_current_flair(user, new_points):
             user_flair_text = flair["flair_text"]
             print(f"Existing flair text is {user_flair_text}")
             break
-    # if their flair text is nothing, set thanks to 1
+    # if their flair text is nothing
     if not user_flair_text:
-        print("No flair set, setting thanks to 1")
+        print("No flair set yet")
         user_flair_text = f"★ {new_points}"
     # if a star already exists in the flair, increment the thanks count
     elif str("★") in user_flair_text:
@@ -171,45 +172,46 @@ while True:
   try:
     # for all comments in the subreddit
     for comment in subreddit.stream.comments(skip_existing=True):
-        print("Found comment")
+        print("Found comment in subreddit")
         # check if the comment is the bot's
         if comment.author.name == reddit.user.me():
           continue
       
-        # check if the comment body matches any of the match patterns if the flair text = "Support" and the comment is from OP
-        if comment.submission.link_flair_text == "Support" and comment.author == comment.submission.author and any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_match_patterns):
+        # check if the comment body matches any of the match patterns if the flair ID = "Support" and the comment is from OP
+        if comment.submission.link_flair_template_id == support_flair_template_id and comment.author == comment.submission.author and any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_match_patterns):
           # check if the comment body does not match any of the excluded patterns
           if not any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_exclude_patterns):
-            print("Matched: ", comment.body)
+            print(f"Matched: {comment.body} by {comment.author}")
             response = f"It seems like you might've resolved your issue. If so, please update the flair to 'Solved' or reply !solved\n\nIf you'd like to thank anyone for helping you, reply !thanks to *their* comment."
             send_reply(response)
       
         # check for !thanks in the body
         if "!thanks" in comment.body.lower():
-          # check if the comment author is the same as the parent comment author, OP is replying to themselves
-          if comment.parent().author == comment.author:
-              print("OP is replying to themselves")
-              response = f"You can't thank yourself."
-              send_reply(response)
-              continue
-          
-          # check if the parent comment author is the bot
-          if comment.parent().author.name == reddit.user.me():
-              response = f"Aw, thanks u/{comment.author.name}"
-              send_reply(response)
-              print("User thanked bot")
-              continue
-    
           # check if the author is a mod
-          elif comment.author in moderators:
-              print(f"!thanks giver is a mod: {comment.author.name}")
+          if comment.author in moderators:
+              print(f"!thanks giver is a mod: {comment.author.name} in {comment.submission.id}")
               user = reddit.redditor(comment.parent().author.name)
               thank_user(user)
       
-          # check if the submission flair text = "Support" or "Solved" and that the comment is from OP
-          elif (comment.submission.link_flair_text == "Support" or comment.submission.link_flair_text == "Solved") and comment.author == comment.submission.author:
+          # check if the submission flair ID = "Support" or "Solved" and that the comment is from OP
+          elif (comment.submission.link_flair_template_id == support_flair_template_id or comment.submission.link_flair_template_id == solved_flair_template_id) and comment.author == comment.submission.author:
               user = reddit.redditor(comment.parent().author.name)
+              print(f"Found applicable !thanks from {comment.author}")
               has_been_thanked = False
+
+              # check if the comment author is the same as the parent comment author, OP is replying to themselves
+              if comment.parent().author == comment.author:
+                  print("OP is replying to themselves")
+                  response = f"You can't thank yourself."
+                  send_reply(response)
+                  continue
+              
+              # check if the parent comment author is the bot
+              if comment.parent().author.name == reddit.user.me():
+                  response = f"Aw, thanks u/{comment.author.name}"
+                  send_reply(response)
+                  print("User thanked bot")
+                  continue
               # get the parent replies to the !thanks to check if they already thanked this comment
               # for parent_reply in comment.parent().replies:
               #     print(f"Found reply: {parent_reply.body} by {parent_reply.author}")
@@ -224,20 +226,25 @@ while True:
               #                 break
             
               # get all comments in the thread to check if thanks has already been given to this user
-              for comment_in_submission in comment.submission.comments.replace_more(limit=0).list():
+              submission = comment.submission
+              submission.comments.replace_more(limit=None)
+              print(f"Checking all comments in thread {comment.submission.id}")
+              for comment_in_submission in submission.comments.list():
                 # check for !thanks from OP
-                if "!thanks" in comment_in_submission.body.lower() and comment.author == comment.submission.author:
+                if "!thanks" in comment_in_submission.body.lower() and comment_in_submission.author == comment.submission.author:
                   # get the user who has already been thanked
-                  previously_thanked_user = reddit.redditor(comment_in_submission.parent.author.name)
+                  previously_thanked_user = comment_in_submission.parent().author
                   # if thanked user is the same as the newly thanked user
                   if previously_thanked_user == user:
                     for child_reply in comment_in_submission.replies:
-                      print("Found !thanks for user - checking if has been thanked")
+                      print(f"Found !thanks for {previously_thanked_user} - checking if has been thanked")
                       # check if there is already a thanks registered by the bot
                       if child_reply.author == reddit.user.me() and re.search(r"Thanks for .* registered\.", child_reply.body):
                           has_been_thanked = True
-                          print("!thanks already given")
+                          print("!thanks already given in this thread")
                           break
+                  if has_been_thanked:
+                      break
                   
               # if they haven't already been thanked
               if not has_been_thanked:
@@ -248,9 +255,9 @@ while True:
                   print("Thanks not added as OP already thanked this user in this thread.")
 
         # check for !solved in the body of a "Support" flaired submission
-        if "!solved" in comment.body.lower() and comment.submission.link_flair_text == "Support":
+        if "!solved" in comment.body.lower() and comment.submission.link_flair_template_id == support_flair_template_id:
           print("!solved found, changing flair")
-          subreddit.flair.select(comment.submission.id, solved_flair_template_id)
+          comment.submission.flair.select(solved_flair_template_id)
           response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'."
           send_reply(response)
 
