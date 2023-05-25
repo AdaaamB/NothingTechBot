@@ -50,7 +50,8 @@ except Exception as e:
 
 def send_reply(response):
   print(f"Sending reply: {response}")
-  comment.reply(response)
+  footer = f"\n\n^(I'm a bot. Something wrong? Suggestions?) [^(Message the Mods)](https://www.reddit.com/message/compose?to=/r/{subreddit}&subject=Bot+feedback)"
+  comment.reply(response + footer)
 
 # check if they have a flair; if it's a star flair or a custom one
 def handle_current_flair(user, new_points):
@@ -254,11 +255,11 @@ while True:
                   send_reply(response)
                   print("Thanks not added as OP already thanked this user in this thread.")
 
-        # check for !solved in the body of a "Support" flaired submission
-        if "!solved" in comment.body.lower() and comment.submission.link_flair_template_id == support_flair_template_id:
+        # check for !solved in the body of a comment from OP or a mod of a "Support" flaired submission
+        if "!solved" in comment.body.lower() and comment.submission.link_flair_template_id == support_flair_template_id and (comment.author == comment.submission.author or comment.author in moderators):
           print("!solved found, changing flair")
           comment.submission.flair.select(solved_flair_template_id)
-          response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'."
+          response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'.\n\nIf you'd like to thank anyone for helping you, reply !thanks to *their* comment."
           send_reply(response)
 
   except praw.exceptions.APIException as e:
