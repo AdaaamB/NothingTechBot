@@ -25,6 +25,7 @@ try:
     thanks_wiki_page_name = config.get('thanks_wiki_page')
     support_regex_match_wiki_page_name = config.get('support_regex_match_wiki_page')
     support_regex_exclude_wiki_page_name = config.get('support_regex_exclude_wiki_page')
+    bool_send_response = config.get('bool_send_response')
     log_level_terminal = config.get('log_level_terminal')
     log_level_file = config.get('log_level_file')
     log_level_api = config.get('log_level_api')
@@ -72,9 +73,13 @@ except Exception as e:
   quit()
 
 def send_reply(response):
-  logger.debug(f"Sending reply: {response}")
-  footer = f"\n\n^(I'm a bot. Something wrong? Suggestions?) [^(Message the Mods)](https://www.reddit.com/message/compose?to=/r/{subreddit}&subject=Bot+feedback)"
-  comment.reply(response + footer)
+  if bool_send_response:
+    logger.debug(f"Sending reply: {response}")
+    footer = f"\n\n^(I'm a bot. Something wrong? Suggestions?) [^(Message the Mods)](https://www.reddit.com/message/compose?to=/r/{subreddit}&subject=Bot+feedback)"
+    comment.reply(response + footer)
+  else:
+    logger.info("Reply not sent as bool_send_response is false.")
+    logger.info(f"Reply would've been: {response}")
 
 # check if they have a flair; if it's a star flair or a custom one
 def handle_current_flair(user, new_points):

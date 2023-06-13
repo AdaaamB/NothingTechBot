@@ -11,6 +11,8 @@
     "support_regex_match_wiki_page": "support_regex_match",
     "support_regex_exclude_wiki_page": "support_regex_exclude",
 
+    "bool_send_response": true,
+
     //10 = DEBUG, 20 = INFO, 30 = WARNING, 40 = ERROR
     "log_level_terminal": 20,
     "log_level_file": 20,
