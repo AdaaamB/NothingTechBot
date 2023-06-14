@@ -1,4 +1,4 @@
-import praw, re, time, json, logging, urllib3
+import praw, re, time, json, logging, urllib3, traceback
 import pandas as pd
 from datetime import date, datetime
 
@@ -40,6 +40,12 @@ try:
     logger.addHandler(file_handler)
 
     logger.debug("Config read")
+
+    twofa = input("Please provide 2FA token\n")
+    print("Read:", twofa.rstrip())
+
+    if twofa:
+       reddit_password = reddit_password + ":" + twofa.rstrip()
 
   reddit = praw.Reddit(
     client_id = config_client_id,
@@ -201,7 +207,7 @@ while True:
   try:
     # for all comments in the subreddit
     for comment in subreddit.stream.comments(skip_existing=True):
-        logger.info(f"Found comment in {subreddit}")
+        logger.info(f"Found comment in {subreddit}, {comment.id} in {comment.submission.id}")
         logger.debug(f"Comment from {comment.author}: {comment.body}")
         # check if the comment is the bot's
         if comment.author.name == reddit.user.me():
@@ -295,4 +301,5 @@ while True:
     time.sleep(retry_delay)
   except Exception as e:
     logger.error(f"Encountered an exception: {e}")
+    traceback.print_exc()
     time.sleep(retry_delay)
