@@ -198,6 +198,7 @@ while True:
   try:
     # for all comments in the subreddit
     for comment in subreddit.stream.comments(skip_existing=True):
+        file_handler = logging.FileHandler(f'logs-{today.strftime("%Y-%m-%d")}.log')
         logger.info(f"Found comment in {subreddit}, {comment.id} in {comment.submission.id}")
         logger.debug(f"Comment from {comment.author}: {comment.body}")
         # check if the comment is the bot's
