@@ -95,7 +95,7 @@ def handle_current_flair(user, new_points):
         logger.info("Found user's existing flair")
         if flair["flair_text"] is not None:
             user_flair_text = flair["flair_text"]
-            logger.debug("Existing flair text is {user_flair_text}")
+            logger.debug(f"Existing flair text is {user_flair_text}")
             break
     # if their flair text is nothing
     if not user_flair_text:
@@ -123,11 +123,10 @@ def handle_current_flair(user, new_points):
     return user_flair_text
 
 # set flair if not custom
-def set_flair(user_flair_text):
-    points = user_flair_text.split()[-1]
+def set_flair(user_flair_text, points):
     point_text = "point" if points == "1" else "points"
     if user_flair_text == "custom":
-        response = f"Thanks for u/{user} registered. They now have {str(points)} {point_text}! However, this user has a custom flair so their level is not displayed."
+        response = f"Thanks for u/{user} registered. They now have {str(points)} {point_text}! However, this user has another flair so their level is not displayed."
         send_reply(response)
         logger.info("Custom flair set, thanks not added to flair")
     else:
@@ -201,7 +200,7 @@ def thank_user(user):
       points = 1
   user_flair_text = handle_current_flair(user, points)
   set_wiki_leaderboard(df, not user_exists_in_leaderboard.empty, user, points)
-  set_flair(user_flair_text)
+  set_flair(user_flair_text, points)
 
 while True:
   try:
@@ -248,17 +247,24 @@ while True:
 
               # check if the comment author is the same as the parent comment author, OP is replying to themselves
               if comment.parent().author == comment.author:
-                  logger.info("OP is replying to themselves")
-                  response = f"You can't thank yourself."
-                  send_reply(response)
-                  continue
+                logger.info("OP is replying to themselves")
+                response = f"You can't thank yourself."
+                send_reply(response)
+                continue
               
               # check if the parent comment author is the bot
               if comment.parent().author.name == reddit.user.me():
-                  response = f"Aw, thanks u/{comment.author.name}"
-                  send_reply(response)
-                  logger.info("User thanked bot")
-                  continue
+                logger.info("User thanked bot")
+                response = f"Aw, thanks u/{comment.author.name}"
+                send_reply(response)
+                continue
+              
+              # check if the parent comment author is AutoModerator
+              if comment.parent().author.name == "AutoModerator":
+                logger.info("User tried to thank AutoMod.")
+                response = f"Thanks for using the !thanks feature but you can't thank AutoModerator."
+                send_reply(response)
+                continue
             
               # get all comments in the thread to check if thanks has already been given to this user
               submission = comment.submission
