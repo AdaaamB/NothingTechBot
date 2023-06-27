@@ -2,14 +2,6 @@ import praw, re, time, json, logging, urllib3, traceback
 import pandas as pd
 from datetime import date, datetime
 
-### TO DO:
-# change "adbotest" subreddit
-# add NothingTechBot to https://www.reddit.com/prefs/apps/
-# change "adbobot" username
-# change "adbobot" password
-# change flair_template_id for support and solved
-# create wiki pages and change in config
-
 #init
 try:
   # read config and set variables
