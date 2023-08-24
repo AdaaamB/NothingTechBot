@@ -296,6 +296,12 @@ while True:
           response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'.\n\nIf you'd like to thank anyone for helping you, reply `!thanks` to *their* comment."
           send_reply(response)
 
+        # check for !support in the body of a comment and respond with support links
+        if "!support" in comment.body.lower():
+          logger.info("!support found, responding with support links")
+          response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
+          send_reply(response)
+
   except praw.exceptions.APIException as e:
     logger.error(f"Encountered an API exception: {e}")
     time.sleep(retry_delay)
