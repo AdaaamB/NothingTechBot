@@ -283,6 +283,7 @@ while True:
                   
               # if they haven't already been thanked
               if not has_been_thanked:
+                 logger.info("Doing nothing.")
                   #thank_user(user)
               else:
                   response = f"You can only thank someone once per thread."
