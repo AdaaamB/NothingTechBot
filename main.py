@@ -220,7 +220,7 @@ while True:
             # check if the comment body does not match any of the excluded patterns
             if not any(re.search(pattern, comment.body, re.IGNORECASE) for pattern in support_exclude_patterns):
               logger.info("Comment matched potential solved regex, so prompting to mark as solved")
-              response = f"It seems like you might've resolved your issue. If so, please update the flair to 'Solved' or reply `!solved`\n\nIf you'd like to thank anyone for helping you, reply `!thanks` to *their* comment."
+              response = f"It seems like you might've resolved your issue. If so, please update the flair to 'Solved' or reply `!solved`"#\n\nIf you'd like to thank anyone for helping you, reply `!thanks` to *their* comment."
               send_reply(response)
             else:
                logger.debug("Comment matched exclude regex, so not responding")
@@ -294,7 +294,7 @@ while True:
         if "!solved" in comment.body.lower() and comment.submission.link_flair_template_id == support_flair_template_id and (comment.author == comment.submission.author or comment.author in moderators):
           logger.info("!solved found, changing flair")
           comment.submission.flair.select(solved_flair_template_id)
-          response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'.\n\n" #If you'd like to thank anyone for helping you, reply `!thanks` to *their* comment.
+          response = f"Thanks, I've marked your thread as solved. If this is incorrect, please revert the flair back to 'Support'."#\n\n If you'd like to thank anyone for helping you, reply `!thanks` to *their* comment."
           send_reply(response)
 
         # check for !support in the body of a comment and respond with support links
