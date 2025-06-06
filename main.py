@@ -1,5 +1,6 @@
-import praw, re, time, json, logging, traceback, configparser, difflib
+import praw, time, json, logging, traceback, configparser, difflib
 from datetime import date
+from praw.models import Submission
 
 #init
 try:
@@ -11,7 +12,6 @@ try:
     reddit_username = config.get('reddit_username')
     reddit_password = config.get('reddit_password')
     subreddit_name = config.get('subreddit')
-    support_flair_template_id = config.get('support_flair_template_id')
     solved_flair_template_id = config.get('solved_flair_template_id')
     bot_config_wiki_page = config.get('bot_config_wiki_page')
     bool_send_response = config.get('bool_send_response')
@@ -70,7 +70,9 @@ except Exception as e:
   logger.error(f"Encountered an exception during startup: {e}")
   quit()
 
-def send_reply(response):
+def send_reply(comment, response):
+  response = response.replace("<user>", f"u/{comment.author.name}")
+
   if bool_send_response:
     logger.debug(f"Sending reply: {response}")
     comment.reply(response + '\n\n' + config_wiki['footer'])
@@ -78,33 +80,49 @@ def send_reply(response):
     logger.info("Reply not sent as bool_send_response is false.")
     logger.info(f"Reply would've been: {response}")
 
+def add_comment(comment, content, submission, sticky):
+  logger.info(f"Adding comment to {submission.id}")
+  new_comment = submission.reply(content + '\n\n' + config_wiki['footer'])
+  if sticky:
+    new_comment.mod.distinguish(sticky=True)
+
 def link_commands(type, search_data):
+  # find the start + end index based on !command and new line
   startidx = body.find(f"!{type}") + len(f"!{type}")
   endidx = body.find("\n", startidx)
+  # get the argument based on startidx and endidx, or just startidx
   argument = body[startidx:endidx].strip() if endidx != -1 else body[startidx:].strip()
   if type == "link" and ("ear" in argument or "phone" in argument):
-    argument = argument.replace("nothing", "") #remove "nothing" from phone and ear searches
+    argument = argument.replace("nothing", "") # remove "nothing" from phone and ear searches
   logger.info(f"!{type} request for {argument} found")
   
   returned_link = None
   alt_aliases = []
 
   for search in search_data:
+    # add all the aliases to the alt_aliases list for searching
     alt_aliases.extend(search["aliases"])
+    # check if the agument exact matches any aliases
     if argument in [alias for alias in search["aliases"]]:
+      returned_display_name = search["display_name"]
       returned_link = search["link"]
       break
 
   if returned_link:
-    return f"Here's the link for `{argument}`: {returned_link}"
+    return f"Here's the link for `{returned_display_name}`: {returned_link}"
   else:
+    # get close matches for the argument vs the aliases
     suggestions = difflib.get_close_matches(argument, [a for a in alt_aliases], n=3, cutoff=0.6)
     if suggestions:
       suggestion_lines = []
+      added_suggestions = set()
       for suggestion in suggestions:
         for search in search_data:
           if suggestion in search["aliases"]:
-            suggestion_lines.append(f"* `{suggestion}`: {search["link"]}")
+            # if we didn't already add this one, add it to the suggestions
+            if search["display_name"] not in added_suggestions:
+              suggestion_lines.append(f"* `{search["display_name"]}`: {search["link"]}")
+              added_suggestions.add(search["display_name"])
             break
       
       suggestion_block = "\n".join(suggestion_lines)
@@ -125,17 +143,38 @@ while True:
         if comment.author.name == reddit.user.me():
           continue
       
-        # check for !solved in the body of a comment from OP or a mod of a submission
+        # check for !solved in the body of a comment from OP or a mod of a submission, set solved flair
         if "!solved" in body and (comment.author == comment.submission.author or comment.author in moderators):
           logger.info("!solved found, changing flair")
           comment.submission.flair.select(solved_flair_template_id)
-          send_reply(config_wiki['solved_response'])
+          send_reply(comment, config_wiki['solved_response'])
+
+        # check for !answer in the body of a comment from OP or a mod of a submission, set solved flair and comment the solution
+        if "!answer" in body and (comment.author == comment.submission.author or comment.author in moderators):
+          logger.info("!answer found, generating reply and changing flair")
+          # check if there's a valid parent comment
+          if isinstance(comment.parent(), Submission):
+            send_reply(comment, "You can only reply `!answer` to a comment providing the answer to your question. Did you mean `!solved`?")
+          else:
+            # can't set the bot as the answer
+            if comment.parent().author == reddit.user.me():
+              send_reply(comment, "You can't set the bot's comment as the answer. Please use `!solved` to change the flair to solved.")
+            else:
+              content = (
+                f"u/{comment.author.name} marked the following comment as the best answer:\n\n"
+                f"> {comment.parent().body}\n\n"
+                f"> \- by u/{comment.parent().author.name} - [Jump to comment]({comment.parent().permalink})"
+              )
+
+              add_comment(comment, content, comment.submission, True)
+              comment.submission.flair.select(solved_flair_template_id)
+              send_reply(comment, config_wiki['answer_response'])
 
         # check for !support in the body of a comment and respond with support links
         if "!support" in body:
           logger.info("!support found, responding with support links")
           response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
-          send_reply(response)
+          send_reply(comment, response)
 
         if "!link" in body:
           with open("commands.json", "r") as j:
@@ -145,7 +184,7 @@ while True:
           response = link_commands("link", search_data)
           
           if response:
-            send_reply(response)
+            send_reply(comment, response)
 
         if "!wiki" in body:
           with open("commands.json", "r") as j:
@@ -155,7 +194,7 @@ while True:
           response = link_commands("wiki", search_data)
           
           if response:
-            send_reply(response)
+            send_reply(comment, response)
 
   except praw.exceptions.APIException as e:
     logger.error(f"Encountered an API exception: {e}")
