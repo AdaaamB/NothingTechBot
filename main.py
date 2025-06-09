@@ -97,13 +97,13 @@ def link_commands(type, search_data, comment_body):
     logger.debug(f"!{type} request found but no argument specified. Full body: {comment_body}")
     if type == "wiki":
       return ("Here's the link to our wiki: https://reddit.com/r/NothingTech/wiki\n\n"
-              "You can also use this command to find specific topics, e.g. `!wiki nfc icon` or `!wiki phone faq`.")
+              "You can also use this command to find specific topics, e.g. `!wiki nfc icon` or `!wiki phone chargers`.")
     else:
       return ("You can view all of Nothing's official links here: https://www.reddit.com/mod/NothingTech/wiki/library/official-links\n\n"
               "You can also use this command to find specific links, e.g. `!link phone (3a)` or `!link nothing discord`.")
 
-  if type == "link" and ("ear" in argument or "phone" in argument):
-    argument = argument.replace("nothing", "") # remove "nothing" from phone and ear searches
+  argument = argument.replace("nothing", "").replace("about", "").replace("on", "").replace("page", "").strip() # remove common search terms
+  argument = " ".join(argument.split()) # split out then join by space to remove any double spaces, tabs, etc.
   logger.info(f"!{type} request for {argument} found")
   
   returned_link = None
