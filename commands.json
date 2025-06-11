@@ -71,9 +71,39 @@
             "link": "https://nothing.tech"
         },
         {
-            "aliases": ["discord", "official discord", "discord server"],
+            "aliases": ["support", "help", "support centre"],
+            "display_name": "Nothing's official support centre",
+            "link": "https://nothing.tech/pages/support-centre"
+        },
+        {
+            "aliases": ["discord", "official discord", "discord server", "discord.gg", "discord.com"],
             "display_name": "Nothing's official Discord",
             "link": "https://discord.gg/nothingtech"
+        },
+        {
+            "aliases": ["x", "twitter", "U+1d54f", "x.com", "twitter.com"],
+            "display_name": "Nothing's official X/Twitter handles",
+            "link": "https://x.com/nothing | https://x.com/nothingindia | https://x.com/nothingjapan | https://x.com/nothingarabia"
+        },
+        {
+            "aliases": ["insta", "instagram", "ig", "instagram.com"],
+            "display_name": "Nothing's official Instagram accounts",
+            "link": "https://instagram.com/nothing | https://instagram.com/nothingindia | https://instagram.com/nothingarabia"
+        },
+        {
+            "aliases": ["rednote", "xiaohongshu"],
+            "display_name": "Nothing's official RedNote",
+            "link": "https://xiaohongshu.com/user/profile/640afd1b000000002901647b"
+        },
+        {
+            "aliases": ["threads", "threads.com"],
+            "display_name": "Nothing's official Threads account",
+            "link": "https://threads.com/@nothing"
+        },
+        {
+            "aliases": ["tiktok", "tiktok.com"],
+            "display_name": "Nothing's official TikTok account",
+            "link": "https://tiktok.com/@nothing"
         },
         {
             "aliases": ["wiki", "reddit wiki", "r/NothingTech wiki", "NothingTech wiki"],
@@ -218,7 +248,7 @@
             "link": "https://www.reddit.com/r/NothingTech/wiki/library/glyph-tools"
         },
         {
-            "aliases": ["community projects", "community creations", "community links", "unofficial projects", "unofficial links", "other nothing community projects", "other community projects"],
+            "aliases": ["projects", "community projects", "community creations", "community links", "unofficial projects", "unofficial links", "other nothing community projects", "other community projects"],
             "display_name": "Other Nothing community projects",
             "link": "https://www.reddit.com/r/NothingTech/wiki/library/community-projects/"
         },
