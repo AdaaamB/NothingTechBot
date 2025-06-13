@@ -188,16 +188,29 @@ while True:
             if comment.parent().author == reddit.user.me():
               send_reply(comment, "You can't set the bot's comment as the answer. Please use `!solved` to change the flair to solved.")
             else:
-              content = (
-                "u/{} marked the following comment as the best answer:\n\n"
-                "> {}\n\n"
-                "> \\- by u/{} - [Jump to comment]({})"
-              ).format(
-                comment.author.name,
-                comment.parent().body.replace("\n\n", "\n\n> "),
-                comment.parent().author.name,
-                comment.parent().permalink
-              )
+              if comment.author in moderators and comment.author != comment.submission.author:
+                content = (
+                  "Mod u/{} marked the following comment as the best answer on behalf of u/{}:\n\n"
+                  "> {}\n\n"
+                  "> \\- by u/{} - [Jump to comment]({})"
+                ).format(
+                  comment.author.name,
+                  comment.submission.author.name,
+                  comment.parent().body.replace("\n\n", "\n\n> "),
+                  comment.parent().author.name,
+                  comment.parent().permalink
+                )
+              else:
+                content = (
+                  "u/{} marked the following comment as the best answer:\n\n"
+                  "> {}\n\n"
+                  "> \\- by u/{} - [Jump to comment]({})"
+                ).format(
+                  comment.author.name,
+                  comment.parent().body.replace("\n\n", "\n\n> "),
+                  comment.parent().author.name,
+                  comment.parent().permalink
+                )
 
               add_comment(comment, content, comment.submission, True)
               comment.submission.flair.select(solved_flair_template_id)
