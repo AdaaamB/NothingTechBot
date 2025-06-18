@@ -1,4 +1,4 @@
-import praw, time, json, logging, traceback, configparser, difflib
+import praw, time, json, logging, traceback, configparser, difflib, re, string
 from datetime import date
 from praw.models import Submission
 
@@ -86,6 +86,34 @@ def add_comment(comment, content, submission, sticky):
   if sticky:
     new_comment.mod.distinguish(sticky=True)
 
+def sanitise_command(argument):
+  # remove words
+  remove_words = config_wiki['remove_words'].split(', ')
+  pattern = r'\b(?:' + '|'.join(map(re.escape, remove_words)) + r')\b'
+  argument = re.sub(pattern, '', argument, flags=re.IGNORECASE)
+
+  # remove emotes like :) :P etc
+  emoticon_pattern = r'[:;=8][-^]?[)D(\]/\\OpP]'
+  argument = re.sub(emoticon_pattern, '', argument)
+
+  # remove emoji using unicode ranges
+  emoji_pattern = r'[' \
+                u'\U0001F600-\U0001F64F'  \
+                u'\U0001F300-\U0001F5FF'  \
+                u'\U0001F680-\U0001F6FF'  \
+                u'\U0001F1E0-\U0001F1FF'  \
+                u'\U00002700-\U000027BF'  \
+                u'\U0001F900-\U0001F9FF'  \
+                u'\U00002600-\U000026FF'  \
+                ']+'
+  argument = re.sub(emoji_pattern, '', argument)
+
+  # remove punctuation
+  argument = argument.translate(str.maketrans('', '', string.punctuation))
+
+  argument = re.sub(r'\s+', ' ', argument).strip()
+  return argument
+
 def link_commands(type, search_data, comment_body):
   # find the start + end index based on !command and new line
   startidx = comment_body.find(f"!{type}") + len(f"!{type}")
@@ -102,8 +130,7 @@ def link_commands(type, search_data, comment_body):
       return ("You can view all of Nothing's official links here: https://www.reddit.com/mod/NothingTech/wiki/library/official-links\n\n"
               "You can also use this command to find specific links, e.g. `!link phone (3a)` or `!link nothing discord`.")
 
-  argument = argument.replace("nothing", "").replace("nothing's", "").replace("about", "").replace("on", "").replace("page", "").strip().replace("the", "").strip() # remove common search terms
-  argument = " ".join(argument.split()) # split out then join by space to remove any double spaces, tabs, etc.
+  argument = sanitise_command(argument)
   logger.info(f"!{type} request for {argument} found")
 
   # too many spaces to be a search argument
