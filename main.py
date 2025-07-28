@@ -5,24 +5,24 @@ from praw.models import Submission
 #init
 try:
   # read config and set variables
-  with open('config.json') as config_file:
+  with open('config.json', 'r') as config_file:
     config = json.load(config_file)
-    config_client_id = config.get('client_id')
-    config_client_secret = config.get('client_secret')
-    reddit_username = config.get('reddit_username')
-    reddit_password = config.get('reddit_password')
-    subreddit_name = config.get('subreddit')
-    solved_flair_template_id = config.get('solved_flair_template_id')
-    bot_config_wiki_page = config.get('bot_config_wiki_page')
-    bool_send_response = config.get('bool_send_response')
-    log_level_terminal = config.get('log_level_terminal')
-    log_level_file = config.get('log_level_file')
-    log_level_api = config.get('log_level_api')
-    log_retain_days = config.get('log_retain_days')
+    config_client_id = config['client_id']
+    config_client_secret = config['client_secret']
+    reddit_username = config['reddit_username']
+    reddit_password = config['reddit_password']
+    subreddit_names = config['subreddit'].replace(' ', '')
+    solved_flair_template_ids = config['solved_flair_template_ids']
+    bot_config_wiki_page = config['bot_config_wiki_page']
+    bool_send_response = config['bool_send_response']
+    log_level_terminal = config['log_level_terminal']
+    log_level_file = config['log_level_file']
+    log_level_api = config['log_level_api']
+    log_retain_days = config['log_retain_days']
 
     logging.basicConfig(level=log_level_terminal, format='%(asctime)s %(levelname)s: %(message)s')
     today = date.today()
-    file_handler = logging.FileHandler(f'logs-{today.strftime("%Y-%m-%d")}.log')
+    file_handler = logging.FileHandler(f'logs/log-{today.strftime("%Y-%m-%d")}.log')
     file_handler.setLevel(log_level_file)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
     logger = logging.getLogger()
@@ -30,7 +30,7 @@ try:
 
     logger.debug("Config read")
 
-    if config.get('twofa_enabled'):
+    if config['twofa_enabled']:
       twofa = input("Please provide 2FA token\n")
       print("twofa enabled. Read:", twofa.rstrip())
 
@@ -51,21 +51,31 @@ try:
   urllib3_logger = logging.getLogger("urllib3")
   urllib3_logger.setLevel(log_level_api)
   
-  retry_delay = 30  
-  subreddit = reddit.subreddit(subreddit_name)
-  moderators = subreddit.moderator()
+  retry_delay = 10
+  subreddit = reddit.subreddit(subreddit_names.replace(' ', ''))
+  first_subreddit = reddit.subreddit(subreddit_names.split('+')[0])
+
+  # map list of mods in each sub
+  moderators_map = {}
+  for subreddit_name in subreddit_names.split('+'):
+    sub = reddit.subreddit(subreddit_name)
+    try:
+      moderators_map[subreddit_name] = list(sub.moderator())
+    except Exception as e:
+      logger.error(f"Failed to get moderators for {subreddit_name}: {e}")
+      quit()
   
-  config_wiki_page = subreddit.wiki[bot_config_wiki_page].content_md.strip()
+  config_wiki_page = first_subreddit.wiki[bot_config_wiki_page].content_md.strip()
   config_parser = configparser.ConfigParser()
   config_parser.read_string(config_wiki_page)
   config_wiki = config_parser['bot']
 
-  support_regex_match_wiki_page = subreddit.wiki[config_wiki['support_regex_match_wiki_page_name']]
-  support_regex_exclude_wiki_page = subreddit.wiki[config_wiki['support_regex_exclude_wiki_page_name']]
+  support_regex_match_wiki_page = first_subreddit.wiki[config_wiki['support_regex_match_wiki_page_name']]
+  support_regex_exclude_wiki_page = first_subreddit.wiki[config_wiki['support_regex_exclude_wiki_page_name']]
   support_match_patterns = support_regex_match_wiki_page.content_md.strip().split('\n')
   support_exclude_patterns = support_regex_exclude_wiki_page.content_md.strip().split('\n')
   
-  logger.info(f"Init complete: logged in as {reddit_username} monitoring {subreddit_name}")
+  logger.info(f"Init complete: logged in as {reddit_username} monitoring {subreddit_names}")
 except Exception as e:
   logger.error(f"Encountered an exception during startup: {e}")
   quit()
@@ -85,6 +95,12 @@ def add_comment(comment, content, submission, sticky):
   new_comment = submission.reply(content + '\n\n' + config_wiki['footer'])
   if sticky:
     new_comment.mod.distinguish(sticky=True)
+
+def is_command_quoted(comment_body, command) -> bool:
+  # check if the command is surrounded by quotes (", ', `)
+  pattern = rf"""(\\)*([\"'`])\s*{command}\s*\1*\2"""
+
+  return bool(re.search(pattern, comment_body))
 
 def sanitise_command(argument):
   # remove words
@@ -191,83 +207,100 @@ while True:
     # for all comments in the subreddit
     for comment in subreddit.stream.comments(skip_existing=True):
         body = comment.body.lower()
-        file_handler = logging.FileHandler(f'logs/logs-{today.strftime("%Y-%m-%d")}.log')
+        file_handler = logging.FileHandler(f'logs/log-{today.strftime("%Y-%m-%d")}.log')
         logger.info(f"Found comment in {subreddit}, {comment.id} in {comment.submission.id}")
         logger.debug(f"Comment from {comment.author}: {comment.body}")
+        subreddit_name = comment.subreddit.display_name.lower()
+        subreddit_mods = moderators_map.get(subreddit_name, [])
+        
         # check if the comment is the bot's
         if comment.author.name == reddit.user.me():
           continue
       
         # check for !solved in the body of a comment from OP or a mod of a submission, set solved flair
-        if "!solved" in body and (comment.author == comment.submission.author or comment.author in moderators):
-          logger.info("!solved found, changing flair")
-          comment.submission.flair.select(solved_flair_template_id)
-          send_reply(comment, config_wiki['solved_response'])
+        if "!solved" in body and (comment.author == comment.submission.author or any(mod.name == comment.author.name for mod in subreddit_mods)):
+          logger.info("!solved found, checking if quoted")
+          if not is_command_quoted(body, "!solved"):
+            logger.info("not quoted, changing flair")
+            subreddit_name = comment.submission.subreddit.display_name.lower()
+            comment.submission.flair.select(solved_flair_template_ids.get(subreddit_name))
+            send_reply(comment, config_wiki['solved_response'])
 
         # check for !answer in the body of a comment from OP or a mod of a submission, set solved flair and comment the solution
-        if "!answer" in body and (comment.author == comment.submission.author or comment.author in moderators):
-          logger.info("!answer found, generating reply and changing flair")
-          # check if there's a valid parent comment
-          if isinstance(comment.parent(), Submission):
-            send_reply(comment, "You can only reply `!answer` to a comment providing the answer to your question. Did you mean `!solved`?")
-          else:
-            # can't set the bot as the answer
-            if comment.parent().author == reddit.user.me():
-              send_reply(comment, "You can't set the bot's comment as the answer. Please use `!solved` to change the flair to solved.")
+        if "!answer" in body and (comment.author == comment.submission.author or any(mod.name == comment.author.name for mod in subreddit_mods)):
+          logger.info("!answer found, checking if quoted")
+          if not is_command_quoted(body, "!answer"):
+            logger.info("nott quoted, generating reply and changing flair")
+            # check if there's a valid parent comment
+            if isinstance(comment.parent(), Submission):
+              send_reply(comment, "You can only reply `!answer` to a comment providing the answer to your question. Did you mean `!solved`?")
             else:
-              if comment.author in moderators and comment.author != comment.submission.author:
-                content = (
-                  "Mod u/{} marked the following comment as the best answer on behalf of u/{}:\n\n"
-                  "> {}\n\n"
-                  "> \\- by u/{} - [Jump to comment]({})"
-                ).format(
-                  comment.author.name,
-                  comment.submission.author.name,
-                  comment.parent().body.replace("\n\n", "\n\n> "),
-                  comment.parent().author.name,
-                  comment.parent().permalink
-                )
+              # can't set the bot as the answer
+              if comment.parent().author == reddit.user.me():
+                send_reply(comment, "You can't set the bot's comment as the answer. Please use `!solved` to change the flair to solved.")
               else:
-                content = (
-                  "u/{} marked the following comment as the best answer:\n\n"
-                  "> {}\n\n"
-                  "> \\- by u/{} - [Jump to comment]({})"
-                ).format(
-                  comment.author.name,
-                  comment.parent().body.replace("\n\n", "\n\n> "),
-                  comment.parent().author.name,
-                  comment.parent().permalink
-                )
+                if comment.author != comment.submission.author and any(mod.name == comment.author.name for mod in subreddit_mods):
+                  content = (
+                    "Mod u/{} marked the following comment as the best answer on behalf of u/{}:\n\n"
+                    "> {}\n\n"
+                    "> \\- by u/{} - [Jump to comment]({})"
+                  ).format(
+                    comment.author.name,
+                    comment.submission.author.name,
+                    comment.parent().body.replace("\n\n", "\n\n> "),
+                    comment.parent().author.name,
+                    comment.parent().permalink
+                  )
+                else:
+                  content = (
+                    "u/{} marked the following comment as the best answer:\n\n"
+                    "> {}\n\n"
+                    "> \\- by u/{} - [Jump to comment]({})"
+                  ).format(
+                    comment.author.name,
+                    comment.parent().body.replace("\n\n", "\n\n> "),
+                    comment.parent().author.name,
+                    comment.parent().permalink
+                  )
 
-              add_comment(comment, content, comment.submission, True)
-              comment.submission.flair.select(solved_flair_template_id)
-              send_reply(comment, config_wiki['answer_response'])
+                add_comment(comment, content, comment.submission, True)
+                subreddit_name = comment.submission.subreddit.display_name.lower()
+                comment.submission.flair.select(solved_flair_template_ids.get(subreddit_name))
+                send_reply(comment, config_wiki['answer_response'])
 
         # check for !support in the body of a comment and respond with support links
         if "!support" in body:
-          logger.info("!support found, responding with support links")
-          response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
-          send_reply(comment, response)
+          logger.info("!support found, checking if quoted")
+          if not is_command_quoted(body, "!support"):
+            logger.info("not quoted, responding with support links")
+            response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
+            send_reply(comment, response)
 
         if "!link" in body or "!linkme" in body:
-          with open("commands.json", "r") as j:
-            json_data = json.load(j)
-            search_data = json_data['link']
+          logger.info("!link found, checking if quoted")
+          if not is_command_quoted(body, "!link"):
+            logger.info("not quoted, doing link command")
+            with open("commands.json", "r") as j:
+              json_data = json.load(j)
+              search_data = json_data['link']
 
-          response = link_commands("link", search_data, body)
-          
-          if response:
-            send_reply(comment, response)
+            response = link_commands("link", search_data, body)
+            
+            if response:
+              send_reply(comment, response)
 
         if "!wiki" in body:
-          with open("commands.json", "r") as j:
-            json_data = json.load(j)
-            search_data = json_data['wiki']
+          logger.info("!wiki found, checking if quoted")
+          if not is_command_quoted(body, "!wiki"):
+            logger.info("not quoted, doing wiki command")
+            with open("commands.json", "r") as j:
+              json_data = json.load(j)
+              search_data = json_data['wiki']
 
-          response = link_commands("wiki", search_data, body)
-          
-          if response:
-            send_reply(comment, response)
+            response = link_commands("wiki", search_data, body)
+            
+            if response:
+              send_reply(comment, response)
 
   except praw.exceptions.APIException as e:
     logger.error(f"Encountered an API exception: {e}")

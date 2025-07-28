@@ -183,7 +183,7 @@
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/phone-3/#wiki_how_do_i_use_glyph_mirror.3F"
         },
         {
-            "aliases": ["community glyph toys", "download more glyph toys", "download glyph toys", "download glyph toy", "matrix glyph toys", "glyph matrix toys"],
+            "aliases": ["community glyph toys", "download more glyph toys", "download glyph toys", "download glyph toy", "matrix glyph toys", "glyph matrix toys", "community matrix", "community matrix app", "community matrix project", "community glyph toys", "community glyph toy"],
             "display_name": "Community Glyph Toys",
             "link": "https://www.reddit.com/r/NothingTech/wiki/library/glyph-projects/#wiki_community_glyph_matrix_toys"
         },
@@ -196,6 +196,11 @@
             "aliases": ["change ear name", "change bluetooth name", "bluetooth name", "change buds name"],
             "display_name": "Change Ear name",
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/ear/#wiki_how_to_change_the_name_of_nothing_ear_devices.3F"
+        },
+        {
+            "aliases": ["bot commands", "all bot commands", "view bot commands", "nothingtechbot", "subreddit bot", "nothingtech bot", "u/nothingtechbot", "u/nothingtechbot commands"],
+            "display_name": "u/NothingTechBot + commands",
+            "link": "https://www.reddit.com/r/NothingTech/wiki/faq/reddit/bot/"
         },
         {
             "aliases": ["flair", "user flair", "name flair", "device flair", "flairing", "user flairing", "name flairing", "device flairing", "set flair", "set user flair", "set a user flair"],
