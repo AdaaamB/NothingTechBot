@@ -1,32 +1,171 @@
 {
+     "glyph": [
+        {
+            "aliases": ["bgnc", "better nothing glyph composer"],
+            "display_name": "Better Nothing Glyph Composer (BNGC)",
+            "link": "https://better-nothing-glyph-composer.pages.dev/"
+        },
+        {
+            "aliases": ["glyphtones", "ringtones", "download"],
+            "display_name": "Glyphtones",
+            "link": "https://glyphtones.firu.dev/"
+        },
+        {
+            "aliases": ["tools", "sebiai", "custom nothing glyph tools", "custom glyph tools"],
+            "display_name": "Custom Nothing Glyph Tools by SebiAi",
+            "link": "https://github.com/SebiAi/custom-nothing-glyph-tools"
+        },
+        {
+            "aliases": ["visualizer", "visualiser", "glyphvisualiser", "glyphvisualizer", "player"],
+            "display_name": "GlyphVisualizer by SebiAi",
+            "link": "https://github.com/SebiAi/GlyphVisualizer"
+        }
+     ],
+     "app": [
+        {
+            "aliases": ["glyphify", "nothing glyphify"],
+            "display_name": "Glyphify",
+            "link": "https://play.google.com/store/apps/details?id=com.frank.glyphify"
+        },
+        {
+            "aliases": ["smartglyph", "smart glyph"],
+            "display_name": "SmartGlyph",
+            "link": "https://play.google.com/store/apps/details?id=com.voidtechstudios.smartglyph"
+        },
+        {
+            "aliases": ["blockit", "block it"],
+            "display_name": "Blockit",
+            "link": "https://play.google.com/store/apps/details?id=com.hypenet.focused"
+        },
+        {
+            "aliases": ["nothing glyph notifications", "glyph notifications"],
+            "display_name": "Nothing Glyph Notifications",
+            "link": "https://play.google.com/store/apps/details?id=com.tldc.essentials"
+        },
+        {
+            "aliases": ["simone", "simone game", "simon glyph", "simone glyph game"],
+            "display_name": "Simone - Glyph Game",
+            "link": "https://play.google.com/store/apps/details?id=com.lisra.simone"
+        },
+        {
+            "aliases": ["compass", "glyph compass"],
+            "display_name": "Glyph Compass",
+            "link": "https://play.google.com/store/apps/details?id=com.JayKayCooperations.glyph_compass"
+        },
+        {
+            "aliases": ["noting", "noting notes"],
+            "display_name": "Noting Notes",
+            "link": "https://play.google.com/store/apps/details?id=com.hearthborn.studios.notingnotes"
+        },
+        {
+            "aliases": ["notes markdown", "notes md", "notes with markdown", "notes: notes with markdown"],
+            "display_name": "Notes: Notes with Markdown",
+            "link": "https://play.google.com/store/apps/details?id=com.monospace.notes"
+        },
+        {
+            "aliases": ["nnotes", "n notes", "colorful notes", "colourful notes"],
+            "display_name": "nNotes - Colorful Notes",
+            "link": "https://play.google.com/store/apps/details?id=com.bhavukverma.nNotes"
+        },
+        {
+            "aliases": ["dothing", "todo", "todo list", "nothing tasks"],
+            "display_name": "Dothing",
+            "link": "https://play.google.com/store/apps/details?id=com.firstyogi.dothing"
+        },
+        {
+            "aliases": ["no things", "nothing list", "no things to do list", "no things to do", "no things todo"],
+            "display_name": "No Things To Do List",
+            "link": "https://play.google.com/store/apps/details?id=com.todo.nothingwidgets"
+        },
+        {
+            "aliases": ["novolume", "volume", "slider", "wheel", "no volume"],
+            "display_name": "NoVolume - The only volume slider with haptics",
+            "link": "https://play.google.com/store/apps/details?id=com.nostudio.novolume"
+        },
+        {
+            "aliases": ["no calendar", "nocalendar", "calendar"],
+            "display_name": "NoCalendar",
+            "link": "https://play.google.com/store/apps/details?id=com.calendar.nocalendar"
+        },
+        {
+            "aliases": ["ndial", "n dial", "dialer", "phone"],
+            "display_name": "N Dial: Minimal Dialer",
+            "link": "https://play.google.com/store/apps/details?id=com.hearthborn.studios.ndial"
+        },
+        {
+            "aliases": ["ncalc", "n calc", "calculator"],
+            "display_name": "N Calc: A Fun Calculator",
+            "link": "https://play.google.com/store/apps/details?id=com.hearthborn.studios.ncalc"
+        },
+        {
+            "aliases": ["battery", "battery health", "charging cycles"],
+            "display_name": "Battery Health by Monospace",
+            "link": "https://play.google.com/store/apps/details?id=com.monospace.battery"
+        },
+        {
+            "aliases": ["nothing clock", "clock", "timer", "stopwatch", "alarm"],
+            "display_name": "Nothing Clock",
+            "link": "https://github.com/SushiiReboot/Nothing-Clock"
+        },
+        {
+            "aliases": ["noid", "nothing files", "files", "file manager", "file"],
+            "display_name": "Noid - File Manager",
+            "link": "https://play.google.com/store/apps/details?id=com.techsip.noid"
+        },
+        {
+            "aliases": ["music", "nothing music", "missing core", "missingcore", "missingcore music", "missing core music"],
+            "display_name": "MissingCore Music",
+            "link": "https://play.google.com/store/apps/details?id=com.cyanchill.missingcore.music"
+        },
+        {
+            "aliases": ["widgets pro"],
+            "display_name": "Widgets Pro",
+            "link": "https://play.google.com/store/apps/details?id=com.tpk.widgetspro"
+        },
+        {
+            "aliases": ["nothing land", "dynamic island", "dynamicspot", "dynamic spot"],
+            "display_name": "NothingLand",
+            "link": "https://github.com/TheGlitchh/NothingLand"
+        },
+        {
+            "aliases": ["news", "nothing news"],
+            "display_name": "Nothing News",
+            "link": "https://play.google.com/store/apps/details?id=com.nothing.news"
+        },
+        {
+            "aliases": ["dot battery", "battery wallpaper", "wallpaper", "live wallpaper"],
+            "display_name": "Dot Battery Live Wallpaper",
+            "link": "https://play.google.com/store/apps/details?id=com.lisra.dotbattery"
+        }
+    ],
     "link": [
         {
-            "aliases": ["phone (1)", "phone 1", "phone1", "phone(1)"],
+            "aliases": ["phone (1)", "phone 1", "phone1", "phone(1)", "np1"],
             "display_name": "Phone (1)",
             "link": "https://nothing.tech/pages/phone-1"
         },
         {
-            "aliases": ["phone (2)", "phone 2", "phone2", "phone(2)"],
+            "aliases": ["phone (2)", "phone 2", "phone2", "phone(2)", "np2"],
             "display_name": "Phone (2)",
             "link": "https://nothing.tech/pages/phone-2"
         },
         {
-            "aliases": ["phone (2a)", "phone 2a", "phone2a", "phone(2a)"],
+            "aliases": ["phone (2a)", "phone 2a", "phone2a", "phone(2a)", "np2a"],
             "display_name": "Phone (2a)",
             "link": "https://nothing.tech/pages/phone-2a"
         },
         {
-            "aliases": ["phone (2a) plus", "phone 2a plus", "phone2aplus", "phone(2a)plus", "phone (2a plus)"],
+            "aliases": ["phone (2a) plus", "phone 2a plus", "phone2aplus", "phone(2a)plus", "phone (2a plus)", "np2a Plus"],
             "display_name": "Phone (2a) Plus",
             "link": "https://nothing.tech/pages/phone-2a-plus"
         },
         {
-            "aliases": ["phone (3a)", "phone 3a", "phone3a", "phone(3a)"],
+            "aliases": ["phone (3a)", "phone 3a", "phone3a", "phone(3a)", "np3a"],
             "display_name": "Phone (3a)",
             "link": "https://nothing.tech/pages/phone-3a"
         },
         {
-            "aliases": ["phone (3a) pro", "phone 3a pro", "phone3apro", "phone(3a)pro", "phone (3a pro)"],
+            "aliases": ["phone (3a) pro", "phone 3a pro", "phone3apro", "phone(3a)pro", "phone (3a pro)", "np3a pro"],
             "display_name": "Phone (3a) Pro",
             "link": "https://nothing.tech/pages/phone-3a-pro"
         },
@@ -198,7 +337,7 @@
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/ear/#wiki_how_to_change_the_name_of_nothing_ear_devices.3F"
         },
         {
-            "aliases": ["bot commands", "all bot commands", "view bot commands", "nothingtechbot", "subreddit bot", "nothingtech bot", "u/nothingtechbot", "u/nothingtechbot commands"],
+            "aliases": ["bot commands", "bot", "commands", "all bot commands", "view bot commands", "nothingtechbot", "subreddit bot", "nothingtech bot", "u/nothingtechbot", "u/nothingtechbot commands"],
             "display_name": "u/NothingTechBot + commands",
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/reddit/bot/"
         },
@@ -228,7 +367,7 @@
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/nothing-os"
         },
         {
-            "aliases": ["phone 3", "nothing phone 3", "phone 3 faq", "faq phone 3", "glyph matrix", "matrix faq", "glyph matrix faq"],
+            "aliases": ["phone 3", "np3", "nothing phone 3", "phone 3 faq", "faq phone 3", "glyph matrix", "matrix faq", "glyph matrix faq"],
             "display_name": "Nothing Phone (3) FAQ",
             "link": "https://www.reddit.com/r/NothingTech/wiki/faq/phone-3"
         },

@@ -100,9 +100,7 @@ def is_command_quoted(comment_body, command) -> bool:
   # check if the command is surrounded by quotes (", ', `)
   pattern = rf"""(\\)*([\"'`])\s*{command}\s*\1*\2"""
 
-  # TODO: THIS IS NOT WORKING AS INTENDED
-  return False
-  #return bool(re.search(pattern, comment_body))
+  return bool(re.search(pattern, comment_body))
 
 def sanitise_command(argument):
   # remove words
@@ -141,18 +139,27 @@ def link_commands(type, search_data, comment_body):
 
   if not argument:
     logger.debug(f"!{type} request found but no argument specified. Full body: {comment_body}")
-    if type == "wiki":
-      return ("Here's the link to our wiki: https://reddit.com/r/NothingTech/wiki\n\n"
+
+    match type:
+      case "glyph":
+        return ("You can view all community Glyph projects here: https://reddit.com/r/NothingTech/wiki/library/glyph-projects/\n\n"
+              "You can also use this command to find specific Glyph projects, e.g. `!glyph bngc` or `!glyph glyphtones`.")
+      case "app":
+        return ("You can view all community apps here: https://reddit.com/r/NothingTech/wiki/library/community-apps/\n\n"
+              "You can also use this command to find specific apps, e.g. `!app simone` or `!app glyphify`.")
+      case "wiki":
+        return ("Here's the link to our wiki: https://reddit.com/r/NothingTech/wiki\n\n"
               "You can also use this command to find specific topics, e.g. `!wiki nfc icon` or `!wiki phone chargers`.")
-    else:
-      return ("You can view all of Nothing's official links here: https://www.reddit.com/mod/NothingTech/wiki/library/official-links\n\n"
+      case _:
+        return ("You can view all of Nothing's official links here: https://reddit.com/mod/NothingTech/wiki/library/official-links\n\n"
               "You can also use this command to find specific links, e.g. `!link phone (3a)` or `!link nothing discord`.")
+      
 
   argument = sanitise_command(argument)
   logger.info(f"!{type} request for {argument} found")
 
   # too many spaces to be a search argument
-  if type == "wiki" and argument.count(" ") > 4:
+  if (type == "wiki" or type == "glyph" or type == "app") and argument.count(" ") > 4:
     return config_wiki['wiki_no_match_footer']
   if type == "link" and argument.count(" ") > 2:
     return config_wiki['link_no_match_footer ']
@@ -179,7 +186,7 @@ def link_commands(type, search_data, comment_body):
       else:
         return f"Here's the link for `{returned_display_name}`: {returned_link}\n\n{config_wiki['wiki_footer']}"
     else:
-      # return links for everything that isn't wiki
+      # return links for everything that isn't wiki (link, glyph, app)
       return f"Here's the link for `{returned_display_name}`: {returned_link}"
   else:
     # get close matches for the argument vs the aliases
@@ -199,10 +206,8 @@ def link_commands(type, search_data, comment_body):
       suggestion_block = "\n".join(suggestion_lines)
       return f"I couldn't an exact match for `{argument}`. Did you mean any of the following?\n\n{suggestion_block}"
     else:
-      if type == "wiki":
-        return f"I couldn't find a link for `{argument}` and no similar matches were found. If you think this is wrong, contact the mods.\n\n{config_wiki['wiki_no_match_footer']}"
-      else:
-        return f"I couldn't find a link for `{argument}` and no similar matches were found. If you think this is wrong, contact the mods.\n\n{config_wiki['link_no_match_footer']}"
+      footer = config_wiki['link_no_match_footer'] if type == "link" else config_wiki['wiki_no_match_footer']
+      return f"I couldn't find a link for `{argument}` and no similar matches were found. If you think this is wrong, contact the mods.\n\n{footer}"
 
 while True:
   try:
@@ -232,7 +237,7 @@ while True:
         if "!answer" in body and (comment.author == comment.submission.author or any(mod.name == comment.author.name for mod in subreddit_mods)):
           logger.info("!answer found, checking if quoted")
           if not is_command_quoted(body, "!answer"):
-            logger.info("nott quoted, generating reply and changing flair")
+            logger.info("not quoted, generating reply and changing flair")
             # check if there's a valid parent comment
             if isinstance(comment.parent(), Submission):
               send_reply(comment, "You can only reply `!answer` to a comment providing the answer to your question. Did you mean `!solved`?")
@@ -278,28 +283,26 @@ while True:
             response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
             send_reply(comment, response)
 
-        if "!link" in body or "!linkme" in body:
-          logger.info("!link found, checking if quoted")
-          if not is_command_quoted(body, "!link"):
-            logger.info("not quoted, doing link command")
+        if any(cmd in body for cmd in ["!link", "!linkme", "!wiki", "!glyph", "!glyphs", "!app", "!apps"]):
+          logger.info("!command found, checking type")
+          
+          if "!link" in body or "!linkme" in body:
+            command_type = "link"
+          elif "!wiki" in body:
+            command_type = "wiki"
+          elif "!glyph" in body or "!glyphs" in body:
+            command_type = "glyph"
+          elif "!app" in body or "!apps" in body:
+            command_type = "app"
+
+          logger.info(f"Command type: {command_type}, checking if quoted")
+          if not is_command_quoted(body, f"!{command_type}"):
+            logger.info(f"Not quoted, doing {command_type} command")
             with open("commands.json", "r") as j:
               json_data = json.load(j)
-              search_data = json_data['link']
+              search_data = json_data[command_type]
 
-            response = link_commands("link", search_data, body)
-            
-            if response:
-              send_reply(comment, response)
-
-        if "!wiki" in body:
-          logger.info("!wiki found, checking if quoted")
-          if not is_command_quoted(body, "!wiki"):
-            logger.info("not quoted, doing wiki command")
-            with open("commands.json", "r") as j:
-              json_data = json.load(j)
-              search_data = json_data['wiki']
-
-            response = link_commands("wiki", search_data, body)
+            response = link_commands(command_type, search_data, body)
             
             if response:
               send_reply(comment, response)
