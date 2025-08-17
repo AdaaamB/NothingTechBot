@@ -64,6 +64,13 @@ try:
     except Exception as e:
       logger.error(f"Failed to get moderators for {subreddit_name}: {e}")
       quit()
+
+  # log the moderators map for each subreddit
+  for subreddit_name, moderators in moderators_map.items():
+    if moderators:
+      logger.debug(f"Subreddit: {subreddit_name} moderators: {[mod.name for mod in moderators]}")
+    else:
+      logger.debug(f"Subreddit: {subreddit_name} has no moderators or could not be fetched.")
   
   with open('bot_config.txt', 'r') as bot_config_file:
     config_wiki_page = bot_config_file.read().strip()
@@ -228,9 +235,8 @@ while True:
         file_handler = logging.FileHandler(f'logs/log-{today.strftime("%Y-%m-%d")}.log')
         logger.info(f"Found comment in {subreddit}, {comment.id} in {comment.submission.id}")
         logger.debug(f"Comment from {comment.author}: {comment.body}")
-        subreddit_name = comment.subreddit.display_name.lower()
+        subreddit_name = comment.subreddit.display_name
         subreddit_mods = moderators_map.get(subreddit_name, [])
-        logger.debug(f"Subreddit moderators: {[mod.name for mod in subreddit_mods]}")
         
         # check if the comment is the bot's
         if comment.author.name == reddit.user.me():
