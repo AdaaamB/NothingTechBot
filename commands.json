@@ -170,6 +170,11 @@
             "link": "https://nothing.tech/pages/phone-3a-pro"
         },
         {
+            "aliases": ["phone (3)", "phone 3", "phone3", "phone(3)", "np3"],
+            "display_name": "Phone (3)",
+            "link": "https://nothing.tech/pages/phone-3"
+        },
+        {
             "aliases": ["ear (1)", "ear 1", "ear1", "ear(1)"],
             "display_name": "Ear (1)",
             "link": "https://nothing.tech/products/ear-1"
@@ -193,6 +198,11 @@
             "aliases": ["ear", "ear (2024)", "ear 2024"],
             "display_name": "Ear",
             "link": "https://nothing.tech/products/ear"
+        },
+        {
+            "aliases": ["headphone (1)", "headphone 1", "headphone1", "headphone(1)", "headphones (1)", "headphones 1", "headphones1", "headphones(1)"],
+            "display_name": "Headphone (1)",
+            "link": "https://nothing.tech/products/headphone-1"
         },
         {
             "aliases": ["beer (5.1%)", "beer", "beer (5.1)", "beer (1)"],
