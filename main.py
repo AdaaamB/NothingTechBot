@@ -229,7 +229,7 @@ while True:
           logger.info("!solved found, checking if quoted")
           if not is_command_quoted(body, "!solved"):
             logger.info("not quoted, changing flair")
-            subreddit_name = comment.submission.subreddit.display_name.lower()
+            subreddit_name = comment.submission.subreddit.display_name
             comment.submission.flair.select(solved_flair_template_ids.get(subreddit_name))
             send_reply(comment, config_wiki['solved_response'])
 
@@ -271,7 +271,7 @@ while True:
                   )
 
                 add_comment(comment, content, comment.submission, True)
-                subreddit_name = comment.submission.subreddit.display_name.lower()
+                subreddit_name = comment.submission.subreddit.display_name
                 comment.submission.flair.select(solved_flair_template_ids.get(subreddit_name))
                 send_reply(comment, config_wiki['answer_response'])
 
@@ -283,16 +283,29 @@ while True:
             response = f"u/{comment.parent().author.name}, here's how to get in touch with Nothing support:\n\n* Visit the [Nothing Support Centre](https://nothing.tech/pages/support-centre) and press the blue chat icon for live chat support (region and time dependent).\n* Visit the [Nothing Customer Support](https://nothing.tech/pages/contact-support) page to get in contact via web form.\n* Contact [\@NothingSupport on X](https://x.com/NothingSupport)."
             send_reply(comment, response)
 
-        if any(cmd in body for cmd in ["!link", "!linkme", "!wiki", "!glyph", "!glyphs", "!app", "!apps"]):
-          logger.info("!command found, checking type")
+        # check for !bug or !feedback in the body of a comment and respond with support links
+        bug_commands = ["!bug", "!bugs", "!feedback"]
+        matched_bug_command = next((cmd for cmd in bug_commands if cmd in body), None)
+        if matched_bug_command:
+          logger.info(f"{matched_bug_command} found, checking if quoted")
+          if not is_command_quoted(body, matched_bug_command):
+            logger.info("not quoted, responding with support links")
+            response = f"u/{comment.parent().author.name}, be sure to submit bugs and feedback requests through your phone's Settings > System > Feedback menu."
+            send_reply(comment, response)
+
+        # check for !link, !wiki, !glyph or !app in the body of a comment and respond with the relevant link
+        json_commands = ["!link", "!linkme", "!wiki", "!faq", "!glyph", "!glyphs", "!app", "!apps"]
+        matched_link_command = next((cmd for cmd in json_commands if cmd in body), None)
+        if matched_link_command:
+          logger.info(f"{matched_link_command} found, checking type")
           
-          if "!link" in body or "!linkme" in body:
+          if matched_link_command == "!link" or matched_link_command == "!linkme":
             command_type = "link"
-          elif "!wiki" in body:
+          elif matched_link_command == "!wiki" or matched_link_command == "!faq":
             command_type = "wiki"
-          elif "!glyph" in body or "!glyphs" in body:
+          elif matched_link_command == "!glyph" or matched_link_command == "!glyphs":
             command_type = "glyph"
-          elif "!app" in body or "!apps" in body:
+          elif matched_link_command == "!app" or matched_link_command == "!apps":
             command_type = "app"
 
           logger.info(f"Command type: {command_type}, checking if quoted")
