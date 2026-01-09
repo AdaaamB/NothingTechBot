@@ -1,0 +1,569 @@
+glyph:
+  - aliases:
+      - bngc
+      - better nothing glyph composer
+      - better glyph composer
+    display_name: Better Nothing Glyph Composer (BNGC) by Krishnagopal Sinha
+    link: https://better-nothing-glyph-composer.pages.dev/
+
+  - aliases:
+      - glyphtones
+      - ringtones
+      - glyph tones
+      - ring tones
+    display_name: Glyphtones by Firu115
+    link: https://glyphtones.firu.dev/
+
+  - aliases:
+      - glyph tools
+      - sebiai
+      - custom nothing glyph tools
+      - custom glyph tools
+      - nothing glyph tools
+    display_name: Custom Nothing Glyph Tools by SebiAi
+    link: https://github.com/SebiAi/custom-nothing-glyph-tools
+
+  - aliases:
+      - visualizer
+      - visualiser
+      - glyphvisualiser
+      - glyphvisualizer
+      - player
+      - glyph visualiser
+      - glyph visualizer
+    display_name: GlyphVisualizer by SebiAi
+    link: https://github.com/SebiAi/GlyphVisualizer
+
+toy:
+  - aliases:
+      - counter
+      - counting
+    display_name: Counter by Daniel
+    link: https://nothing.community/d/36837-introducing-counter-a-glyph-toy
+
+  - aliases:
+      - dot hub
+      - dothub
+      - music visualiser
+      - music visualizer
+      - visualiser
+      - visualizer
+      - compass
+      - breathing
+      - coin flip
+      - dice
+    display_name: Dot Hub by nostream
+    link: https://play.google.com/store/apps/details?id=com.gesekus.dothub
+
+  - aliases:
+      - beat
+      - glyph beat
+      - beat visualiser
+      - beat visualizer
+    display_name: Glyph Beat by pauwma
+    link: https://play.google.com/store/apps/details?id=com.pauwma.glyphbeat
+
+  - aliases:
+      - bike
+      - glyph bike
+      - bike game
+      - glyph bike game
+    display_name: Glyph Bike by Ofishial Digital
+    link: https://play.google.com/store/apps/details?id=com.ofishialdigital.glyphbike
+
+  - aliases:
+      - catch
+      - glyph catch
+      - pokemon
+      - pokémon
+      - catch pokemon
+      - catch pokémon
+    display_name: Glyph Catch by Equal_Parts
+    link: https://nothing.community/en/d/45626-pokemon-collecting-fan-game-for-np3-glyph-matrix
+
+  - aliases:
+      - museum
+      - glyph museum
+      - art
+      - glyph art
+      - animation
+      - animations
+      - glyph animations
+    display_name: Glyph Museum by pauwma
+    link: https://play.google.com/store/apps/details?id=com.pauwma.glyphmuseum
+
+  - aliases:
+      - glyph toybox
+      - toybox
+      - ringer mode
+      - ringer
+      - battery flow
+      - battery monitor
+      - battery
+    display_name: Glyph Toybox by Singularity Design
+    link: https://play.google.com/store/apps/details?id=com.singularityux.glyphtoybox
+
+  - aliases:
+      - glyphify
+      - nothing glyphify
+      - ball maze
+      - quick dial
+      - quick glyph dial
+      - glyph dial
+      - glyphify dial
+    display_name: Glyphify by Fr4nKB
+    link: https://play.google.com/store/apps/details?id=com.frank.glyphify
+
+  - aliases:
+      - leveller
+      - leveler
+    display_name: Leveller by RapidZapper
+    link: https://play.google.com/store/apps/details?id=com.lisra.matrixleveler
+
+  - aliases:
+      - 8ball
+      - 8 ball
+      - magic 8 ball
+      - magic8ball
+      - magic 8ball
+    display_name: Magic 8 Ball by Fr4nKB
+    link: https://play.google.com/store/apps/details?id=com.frank.magic8ball
+
+  - aliases:
+      - smartglyph
+      - smart glyph
+      - notifications
+      - app notifications
+      - timer
+      - glyph timer
+      - glyph progress
+      - progress
+      - progress bar
+      - bluetooth
+      - bluetooth alert
+    display_name: SmartGlyph by Experion Labs
+    link: https://play.google.com/store/apps/details?id=com.voidtechstudios.smartglyph
+
+app:
+  - aliases:
+      - glyphify
+      - nothing glyphify
+    display_name: Glyphify by Fr4nKB
+    link: https://play.google.com/store/apps/details?id=com.frank.glyphify
+
+  - aliases:
+      - smartglyph
+      - smart glyph
+    display_name: SmartGlyph by Experion Labs
+    link: https://play.google.com/store/apps/details?id=com.voidtechstudios.smartglyph
+
+  - aliases:
+      - blockit
+      - block it
+    display_name: Blockit by Mirko_ddd
+    link: https://play.google.com/store/apps/details?id=com.hypenet.focused
+
+  - aliases:
+      - nothing glyph notifications
+      - glyph notifications
+    display_name: Nothing Glyph Notifications by GlyphLab
+    link: https://play.google.com/store/apps/details?id=com.tldc.essentials
+
+  - aliases:
+      - simone
+      - simone game
+      - simon glyph
+      - simone glyph game
+    display_name: Simone - Glyph Game by RapidZapper
+    link: https://play.google.com/store/apps/details?id=com.lisra.simone
+
+  - aliases:
+      - compass
+      - glyph compass
+    display_name: Glyph Compass by JayKayCooperations
+    link: https://play.google.com/store/apps/details?id=com.JayKayCooperations.glyph_compass
+
+  - aliases:
+      - noting
+      - noting notes
+    display_name: Noting Notes by Hearthborn
+    link: https://play.google.com/store/apps/details?id=com.hearthborn.studios.notingnotes
+
+  - aliases:
+      - notes markdown
+      - notes md
+      - notes with markdown
+      - "notes: notes with markdown"
+    display_name: Notes: Notes with Markdown by monospace
+    link: https://play.google.com/store/apps/details?id=com.monospace.notes
+
+  - aliases:
+      - nnotes
+      - n notes
+      - colorful notes
+      - colourful notes
+    display_name: nNotes - Colorful Notes Bhavuk Verma
+    link: https://play.google.com/store/apps/details?id=com.bhavukverma.nNotes
+
+  - aliases:
+      - dothing
+      - todo
+      - todo list
+      - nothing tasks
+    display_name: Dothing FirstYogi
+    link: https://play.google.com/store/apps/details?id=com.firstyogi.dothing
+
+  - aliases:
+      - no things
+      - nothing list
+      - no things to do list
+      - no things to do
+      - no things todo
+    display_name: No Things To Do List by Martin Diermayr
+    link: https://play.google.com/store/apps/details?id=com.todo.nothingwidgets
+
+  - aliases:
+      - novolume
+      - volume
+      - slider
+      - wheel
+      - no volume
+    display_name: NoVolume - Volume slider with haptics by NoAppsStudio
+    link: https://play.google.com/store/apps/details?id=com.nostudio.novolume
+
+  - aliases:
+      - no calendar
+      - nocalendar
+      - calendar
+    display_name: NoCalendar by NoAppsStudio
+    link: https://play.google.com/store/apps/details?id=com.calendar.nocalendar
+
+  - aliases:
+      - ndial
+      - n dial
+      - dialer
+      - phone
+    display_name: "N Dial: Minimal Dialer by Hearthborn"
+    link: https://play.google.com/store/apps/details?id=com.hearthborn.studios.ndial
+
+  - aliases:
+      - ncalc
+      - n calc
+      - calculator
+    display_name: "N Calc: A Fun Calculator by Hearthborn"
+    link: https://play.google.com/store/apps/details?id=com.hearthborn.studios.ncalc
+
+  - aliases:
+      - battery
+      - battery health
+      - charging cycles
+    display_name: Battery Health by Monospace
+    link: https://play.google.com/store/apps/details?id=com.monospace.battery
+
+  - aliases:
+      - nothing clock
+      - clock
+      - timer
+      - stopwatch
+      - alarm
+    display_name: Nothing Clock by Sasha Chverenko
+    link: https://github.com/SushiiReboot/Nothing-Clock
+
+  - aliases:
+      - noid
+      - nothing files
+      - files
+      - file manager
+      - file
+    display_name: Noid - File Manager by TechSip Studios
+    link: https://play.google.com/store/apps/details?id=com.techsip.noid
+
+  - aliases:
+      - music
+      - nothing music
+      - missing core
+      - missingcore
+      - missingcore music
+      - missing core music
+    display_name: MissingCore Music by MissingCore
+    link: https://play.google.com/store/apps/details?id=com.cyanchill.missingcore.music
+
+  - aliases:
+      - widgets pro
+    display_name: Widgets Pro by Preethamkmr3
+    link: https://play.google.com/store/apps/details?id=com.tpk.widgetspro
+
+  - aliases:
+      - nothing land
+      - dynamic island
+      - dynamicspot
+      - dynamic spot
+    display_name: NothingLand by TheGlitchh
+    link: https://github.com/TheGlitchh/NothingLand
+
+  - aliases:
+      - news
+      - nothing news
+    display_name: Nothing News by Mirko_ddd
+    link: https://play.google.com/store/apps/details?id=com.nothing.news
+
+  - aliases:
+      - dot battery
+      - battery wallpaper
+      - wallpaper
+      - live wallpaper
+    display_name: Dot Battery Live Wallpaper by RapidZapper
+    link: https://play.google.com/store/apps/details?id=com.lisra.dotbattery
+
+link:
+  - aliases:
+      - phone (1)
+      - phone 1
+      - phone1
+      - phone(1)
+      - np1
+    display_name: Phone (1)
+    link: https://nothing.tech/pages/phone-1
+
+  - aliases:
+      - phone (2)
+      - phone 2
+      - phone2
+      - phone(2)
+      - np2
+    display_name: Phone (2)
+    link: https://nothing.tech/pages/phone-2
+
+  - aliases:
+      - phone (2a)
+      - phone 2a
+      - phone2a
+      - phone(2a)
+      - np2a
+    display_name: Phone (2a)
+    link: https://nothing.tech/pages/phone-2a
+
+  - aliases:
+      - phone (2a) plus
+      - phone 2a plus
+      - phone2aplus
+      - phone(2a)plus
+      - phone (2a plus)
+      - np2a Plus
+    display_name: Phone (2a) Plus
+    link: https://nothing.tech/pages/phone-2a-plus
+
+  - aliases:
+      - phone (3a)
+      - phone 3a
+      - phone3a
+      - phone(3a)
+      - np3a
+    display_name: Phone (3a)
+    link: https://nothing.tech/pages/phone-3a
+
+  - aliases:
+      - phone (3a) pro
+      - phone 3a pro
+      - phone3apro
+      - phone(3a)pro
+      - phone (3a pro)
+      - np3a pro
+    display_name: Phone (3a) Pro
+    link: https://nothing.tech/pages/phone-3a-pro
+
+  - aliases:
+      - phone (3)
+      - phone 3
+      - phone3
+      - phone(3)
+      - np3
+    display_name: Phone (3)
+    link: https://nothing.tech/pages/phone-3
+
+  - aliases:
+      - phone (3a) lite
+      - phone 3a lite
+      - phone3a lite
+      - phone(3a) lite
+      - np3a lite
+      - 3a lite
+      - (3a) lite
+    display_name: Phone (3a) Lite
+    link: https://nothing.tech/pages/phone-3a-lite
+
+  - aliases:
+      - ear (1)
+      - ear 1
+      - ear1
+      - ear(1)
+    display_name: Ear (1)
+    link: https://nothing.tech/products/ear-1
+
+  - aliases:
+      - ear (2)
+      - ear 2
+      - ear2
+      - ear(2)
+    display_name: Ear (2)
+    link: https://nothing.tech/products/ear-2
+
+  - aliases:
+      - ear (stick)
+      - ear stick
+      - earstick
+      - ear(stick)
+    display_name: Ear (stick)
+    link: https://nothing.tech/products/ear-stick
+
+  - aliases:
+      - ear (open)
+      - ear open
+      - earopen
+      - ear(open)
+    display_name: Ear (open)
+    link: https://nothing.tech/products/ear-open
+
+  - aliases:
+      - ear
+      - ear (2024)
+      - ear 2024
+    display_name: Ear
+    link: https://nothing.tech/products/ear
+
+  - aliases:
+      - ear (3)
+      - ear 3
+      - ear3
+      - ear(3)
+    display_name: Ear (3)
+    link: https://nothing.tech/products/ear-3
+
+  - aliases:
+      - headphone (1)
+      - headphone 1
+      - headphone1
+      - headphone(1)
+      - headphones (1)
+      - headphones 1
+      - headphones1
+      - headphones(1)
+    display_name: Headphone (1)
+    link: https://nothing.tech/products/headphone-1
+
+  - aliases:
+      - beer (5.1%)
+      - beer
+      - beer (5.1)
+      - beer (1)
+    display_name: Beer (5.1%)
+    link: https://nothing.tech/pages/beer
+
+  - aliases:
+      - community
+      - nothing.community
+      - nothing community
+      - forum
+    display_name: Nothing's official community site
+    link: https://nothing.community
+
+  - aliases:
+      - website
+      - nothing.tech
+      - nothing
+      - nothing tech
+    display_name: Nothing's official website
+    link: https://nothing.tech
+
+  - aliases:
+      - support
+      - help
+      - support centre
+    display_name: Nothing's official support centre
+    link: https://nothing.tech/pages/support-centre
+
+  - aliases:
+      - discord
+      - official discord
+      - discord server
+      - discord.gg
+      - discord.com
+    display_name: Nothing's official Discord
+    link: https://discord.gg/nothingtech
+
+  - aliases:
+      - x
+      - twitter
+      - U+1d54f
+      - x.com
+      - twitter.com
+    display_name: Nothing's official X/Twitter handles
+    link: "https://x.com/nothing | https://x.com/nothingindia | https://x.com/nothingjapan | https://x.com/nothingarabia"
+
+  - aliases:
+      - insta
+      - instagram
+      - ig
+      - instagram.com
+    display_name: Nothing's official Instagram accounts
+    link: "https://instagram.com/nothing | https://instagram.com/nothingindia | https://instagram.com/nothingarabia"
+
+  - aliases:
+      - rednote
+      - xiaohongshu
+    display_name: Nothing's official RedNote
+    link: https://xiaohongshu.com/user/profile/640afd1b000000002901647b
+
+  - aliases:
+      - threads
+      - threads.com
+    display_name: Nothing's official Threads account
+    link: https://threads.com/@nothing
+
+  - aliases:
+      - tiktok
+      - tiktok.com
+    display_name: Nothing's official TikTok account
+    link: https://tiktok.com/@nothing
+
+  - aliases:
+      - wiki
+      - reddit wiki
+      - r/NothingTech wiki
+      - NothingTech wiki
+    display_name: r/NothingTech Wiki
+    link: https://reddit.com/r/NothingTech/wiki
+
+wiki:
+  - aliases:
+      - app icons
+      - monochrome
+      - monochrome icons
+      - black and white
+      - black + white
+      - black & white
+      - black and white icons
+      - black + white icons
+      - black & white icons
+      - icon pack
+      - nothing icon pack
+    display_name: Nothing Icon Pack
+    link: https://www.reddit.com/r/NothingTech/wiki/faq/nothing-os/#wiki_how_to_make_app_icons_monochrome_.2F_black_and_white
+
+  - aliases:
+      - update
+      - os update
+      - nos update
+      - nothing os update
+      - should I update
+    display_name: Should I update Nothing OS?
+    link: https://www.reddit.com/r/NothingTech/wiki/faq/nothing-os/#wiki_should_i_update_to_the_latest_version_of_nothing_os.3F
+
+  - aliases:
+      - nfc icon
+      - what is this icon
+      - what icon is this
+      - nfc
+      - the nfc icon
+    display_name: The NFC Icon
+    link: https://www.reddit.com/r/NothingTech/wiki/faq/nothing-os/#wiki_what_is_this_icon_in_my_status_bar.3F_.28squares_with_inner_circle.29
