@@ -37,6 +37,7 @@ export async function isCollaborator(username, token) {
     `https://api.github.com/repos/${REPO}/collaborators/${username}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
+  console.log("Collaborator check status:", res.status);
   return res.status === 204;
 }
 

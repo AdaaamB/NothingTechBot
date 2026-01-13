@@ -7,8 +7,7 @@ import {
   createBranch,
   commitFile,
   openPR,
-  getAccessToken, 
-  fetchYamlFile
+  getAccessToken
 } from "./github.js";
 
 import { parseYaml, dumpYaml } from "./yaml.js";
@@ -77,6 +76,9 @@ async function init() {
   baseSha = await getMainSha(token);
 
   app.hidden = false;
+  console.log("User:", user.login);
+  console.log("Checking collaborator...");
+
   renderTable();
 }
 
