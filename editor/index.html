@@ -14,9 +14,14 @@
             <h1><i class="fa-solid fa-robot"></i> Bot Commands Editor</h1>
         </div>
         <div class="header-right">
-            <span id="userInfo" hidden></span>
-            <button id="loginBtn"><i class="fa-brands fa-github"></i> Login with GitHub</button>
-            <button id="logoutBtn" hidden>Logout</button>
+            <div id="authSection">
+                <input type="password" id="tokenInput" placeholder="Enter GitHub PAT..." />
+                <button id="saveTokenBtn" class="primary">Set Token</button>
+            </div>
+            <div id="userSection" hidden>
+                <span id="userInfo"></span>
+                <button id="logoutBtn" class="secondary">Clear Token</button>
+            </div>
         </div>
     </header>
 

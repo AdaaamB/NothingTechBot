@@ -2,33 +2,18 @@ const CLIENT_ID = "Ov23liyqmUB7D5ZzIEMo";
 const REPO = "AdaaamB/NothingTechBot";
 const FILE_PATH = "commands.yaml"; // Defined in root as per prompt
 
-export function login() {
-    const redirectUri = window.location.origin + window.location.pathname;
-    const scopes = "repo read:user";
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&response_type=token`;
+export function saveToken(token) {
+  localStorage.setItem("gh_token", token);
+  window.location.reload();
 }
 
 export function logout() {
-    localStorage.removeItem("gh_token");
-    window.location.href = window.location.origin + window.location.pathname;
+  localStorage.removeItem("gh_token");
+  window.location.reload();
 }
 
 export function getAccessToken() {
-    // Check URL first
-    const params = new URLSearchParams(window.location.search);
-    // GitHub implicit flow returns token in hash usually, but let's check hash
-    if (window.location.hash.includes("access_token=")) {
-        const hash = window.location.hash.substring(1);
-        const hashParams = new URLSearchParams(hash);
-        const token = hashParams.get("access_token");
-        if (token) {
-            localStorage.setItem("gh_token", token);
-            // Clean URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-            return token;
-        }
-    }
-    return localStorage.getItem("gh_token");
+  return localStorage.getItem("gh_token");
 }
 
 export async function getUser(token) {

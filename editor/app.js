@@ -17,7 +17,10 @@ let fileSha = null;
 /* ------------------ DOM ELEMENTS ------------------ */
 const els = {
     app: document.getElementById("app"),
-    loginBtn: document.getElementById("loginBtn"),
+    tokenInput: document.getElementById("tokenInput"),
+    saveTokenBtn: document.getElementById("saveTokenBtn"),
+    authSection: document.getElementById("authSection"),
+    userSection: document.getElementById("userSection"),
     logoutBtn: document.getElementById("logoutBtn"),
     userInfo: document.getElementById("userInfo"),
     tbody: document.querySelector("#mappingsTable tbody"),
@@ -41,29 +44,54 @@ const els = {
 };
 
 /* ------------------ INITIALIZATION ------------------ */
-els.loginBtn.onclick = login;
+els.saveTokenBtn.onclick = () => {
+  const t = els.tokenInput.value.trim();
+  if (t) saveToken(t);
+};
+
 els.logoutBtn.onclick = logout;
 
 async function bootstrap() {
     token = getAccessToken();
-    if (!token) return; // User stays on login screen
+  
+    if (!token) {
+        els.authSection.hidden = false;
+        els.userSection.hidden = true;
+        els.app.hidden = true;
+        return; 
+    }
 
-    setLoading(true, "Authenticating...");
+    els.authSection.hidden = true;
+    els.userSection.hidden = false;
+
+    setLoading(true, "Authenticating with GitHub...");
+
     try {
         const user = await getUser(token);
+        
+        // Error handling for bad tokens
+        if (user.message === "Bad credentials") {
+            throw new Error("Invalid GitHub Token. Please clear and try again.");
+        }
+
+        // Update UI with username
         els.userInfo.textContent = `Signed in as ${user.login}`;
-        els.userInfo.hidden = false;
-        els.loginBtn.hidden = true;
-        els.logoutBtn.hidden = false;
-
+        
+        // 3. Permission Check
         const allowed = await isCollaborator(user.login, token);
-        if (!allowed) throw new Error("You do not have write access to this repo.");
+        if (!allowed) {
+            throw new Error("You do not have write access to the NothingTechBot repository.");
+        }
 
+        // 4. Data Loading
         await loadData();
         els.app.hidden = false;
+
     } catch (err) {
         console.error(err);
         alert(err.message);
+        // If the token is invalid, it's often best to log out automatically
+        if (err.message.includes("Invalid")) logout();
     } finally {
         setLoading(false);
     }
