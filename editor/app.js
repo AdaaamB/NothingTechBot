@@ -13,6 +13,7 @@ import { parseYaml, dumpYaml } from "./yaml.js";
 let token = null;
 let yamlData = {}; // { category: [items] }
 let fileSha = null;
+let originalYamlContent = "";
 
 /* ------------------ DOM ELEMENTS ------------------ */
 const els = {
@@ -99,11 +100,34 @@ async function bootstrap() {
 
 async function loadData() {
     setLoading(true, "Fetching commands.yaml...");
-    const result = await loadYaml(token);
-    yamlData = parseYaml(result.content) || {};
-    fileSha = result.sha;
-    renderTable();
-    setLoading(false);
+    try {
+        const result = await loadYaml(token);
+        originalYamlContent = result.content; // Store the original string
+        yamlData = parseYaml(result.content) || {};
+        fileSha = result.sha;
+        renderTable();
+        updateSaveButtonState(); // Initialize button state
+    } catch (err) {
+        console.error(err);
+        alert("Error loading YAML: " + err.message);
+    } finally {
+        setLoading(false);
+    }
+}
+
+function updateSaveButtonState() {
+    const currentYamlContent = dumpYaml(yamlData);
+    // Disable button if content is identical
+    els.saveBtn.disabled = (currentYamlContent.trim() === originalYamlContent.trim());
+    
+    // Optional: Add a visual cue
+    if (els.saveBtn.disabled) {
+        els.saveBtn.style.opacity = "0.5";
+        els.saveBtn.style.cursor = "not-allowed";
+    } else {
+        els.saveBtn.style.opacity = "1";
+        els.saveBtn.style.cursor = "pointer";
+    }
 }
 
 bootstrap();
@@ -161,6 +185,7 @@ function attachRowEvents(tr, category, index) {
             } else {
                 yamlData[category][index][field] = val;
             }
+            updateSaveButtonState()
         };
     });
 
@@ -171,6 +196,7 @@ function attachRowEvents(tr, category, index) {
             // Clean up empty categories if desired
             if (yamlData[category].length === 0) delete yamlData[category];
             renderTable(els.searchInput.value);
+            updateSaveButtonState()
         }
     };
 
@@ -206,6 +232,7 @@ function attachRowEvents(tr, category, index) {
         yamlData[targetCat].splice(targetIdx, 0, movedItem);
 
         renderTable(els.searchInput.value);
+        updateSaveButtonState()
     };
 }
 
@@ -261,19 +288,31 @@ els.modalSave.onclick = () => {
 
     els.modal.hidden = true;
     renderTable(els.searchInput.value);
+    updateSaveButtonState()
 };
 
 /* ------------------ SAVE ------------------ */
 els.saveBtn.onclick = async () => {
-    if (!confirm("Are you sure you want to save changes to the repository?")) return;
+    const currentYaml = dumpYaml(yamlData);
+    
+    if (currentYaml.trim() === originalYamlContent.trim()) {
+        alert("No changes detected to save.");
+        return;
+    }
+
+    // Ask user for a commit message
+    const customMessage = prompt("Enter a commit message:", "Update commands.yaml via Editor");
+    
+    // If user clicks "Cancel", stop the save
+    if (customMessage === null) return;
+
+    const message = customMessage.trim() || "Update commands.yaml via Editor";
 
     setLoading(true, "Committing changes...");
     try {
-        const yamlStr = dumpYaml(yamlData);
-        await saveToMain(token, yamlStr, fileSha, "Update commands.yaml via Editor");
+        await saveToMain(token, currentYaml, fileSha, message);
         alert("Saved successfully!");
-        // Reload to get new SHA
-        await loadData();
+        await loadData(); // Reload to get new SHA and reset "original" state
     } catch (err) {
         console.error(err);
         alert("Failed to save: " + err.message);
