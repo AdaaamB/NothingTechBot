@@ -1,232 +1,264 @@
 import {
-  login,
-  getUser,
-  isCollaborator,
-  loadYaml,
-  getMainSha,
-  createBranch,
-  commitFile,
-  openPR,
-  getAccessToken
+    login,
+    logout,
+    getAccessToken,
+    getUser,
+    isCollaborator,
+    loadYaml,
+    saveToMain
 } from "./github.js";
-
 import { parseYaml, dumpYaml } from "./yaml.js";
 
 /* ------------------ STATE ------------------ */
-
 let token = null;
-let yamlData = null;
+let yamlData = {}; // { category: [items] }
 let fileSha = null;
-let baseSha = null;
 
-/* ------------------ DOM ------------------ */
+/* ------------------ DOM ELEMENTS ------------------ */
+const els = {
+    app: document.getElementById("app"),
+    loginBtn: document.getElementById("loginBtn"),
+    logoutBtn: document.getElementById("logoutBtn"),
+    userInfo: document.getElementById("userInfo"),
+    tbody: document.querySelector("#mappingsTable tbody"),
+    addBtn: document.getElementById("addBtn"),
+    saveBtn: document.getElementById("saveBtn"),
+    searchInput: document.getElementById("searchInput"),
 
-const loginBtn = document.getElementById("loginBtn");
-const app = document.getElementById("app");
-const userInfo = document.getElementById("userInfo");
-const tbody = document.querySelector("#mappingsTable tbody");
+    // Modal
+    modal: document.getElementById("modal"),
+    modalCategory: document.getElementById("modalCategory"),
+    categoryList: document.getElementById("categoryList"),
+    modalDisplayName: document.getElementById("modalDisplayName"),
+    modalAliases: document.getElementById("modalAliases"),
+    modalLink: document.getElementById("modalLink"),
+    modalSave: document.getElementById("modalSave"),
+    modalCancel: document.getElementById("modalCancel"),
 
-const addBtn = document.getElementById("addBtn");
-const saveBtn = document.getElementById("saveBtn");
+    // Loading
+    loader: document.getElementById("loadingOverlay"),
+    loaderText: document.getElementById("loadingText"),
+};
 
-const modal = document.getElementById("modal");
-const modalCategory = document.getElementById("modalCategory");
-const modalDisplayName = document.getElementById("modalDisplayName");
-const modalAliases = document.getElementById("modalAliases");
-const modalLink = document.getElementById("modalLink");
-const modalSave = document.getElementById("modalSave");
-const modalCancel = document.getElementById("modalCancel");
+/* ------------------ INITIALIZATION ------------------ */
+els.loginBtn.onclick = login;
+els.logoutBtn.onclick = logout;
 
-/* ------------------ AUTH ------------------ */
-
-loginBtn.onclick = login;
 async function bootstrap() {
-  token = getAccessToken();
+    token = getAccessToken();
+    if (!token) return; // User stays on login screen
 
-  if (!token) {
-    // Not logged in yet; show login button only
-    return;
-  }
+    setLoading(true, "Authenticating...");
+    try {
+        const user = await getUser(token);
+        els.userInfo.textContent = `Signed in as ${user.login}`;
+        els.userInfo.hidden = false;
+        els.loginBtn.hidden = true;
+        els.logoutBtn.hidden = false;
 
-  try {
-    await init();
-  } catch (err) {
-    console.error(err);
-    alert("Failed to load data. Check console.");
-  }
+        const allowed = await isCollaborator(user.login, token);
+        if (!allowed) throw new Error("You do not have write access to this repo.");
+
+        await loadData();
+        els.app.hidden = false;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function loadData() {
+    setLoading(true, "Fetching commands.yaml...");
+    const result = await loadYaml(token);
+    yamlData = parseYaml(result.content) || {};
+    fileSha = result.sha;
+    renderTable();
+    setLoading(false);
 }
 
 bootstrap();
 
-/* ------------------ INIT ------------------ */
+/* ------------------ RENDER & EDITING ------------------ */
+function renderTable(filter = "") {
+    els.tbody.innerHTML = "";
+    const filterText = filter.toLowerCase();
 
-async function init() {
-  const user = await getUser(token);
-  userInfo.textContent = user.login;
+    Object.entries(yamlData).forEach(([category, items]) => {
+        // If empty category, keep it in state but maybe not render? 
+        // Or render a placeholder? We'll skip for now if empty.
+        if (!items || !Array.isArray(items)) return;
 
-  const allowed = await isCollaborator(user.login, token);
-  if (!allowed) {
-    alert("You do not have edit access.");
-    return;
-  }
+        items.forEach((item, index) => {
+            // Search Filtering
+            const str = `${category} ${item.display_name} ${item.aliases.join(" ")}`.toLowerCase();
+            if (filter && !str.includes(filterText)) return;
 
-  const yamlResult = await loadYaml(token);
-  yamlData = parseYaml(yamlResult.content);
-  fileSha = yamlResult.sha;
-  baseSha = await getMainSha(token);
+            const tr = document.createElement("tr");
+            tr.draggable = true;
+            tr.dataset.category = category;
+            tr.dataset.index = index;
 
-  app.hidden = false;
-  console.log("User:", user.login);
-  console.log("Checking collaborator...");
-
-  renderTable();
-}
-
-/* ------------------ RENDER ------------------ */
-
-function renderTable() {
-  tbody.innerHTML = "";
-
-  Object.entries(yamlData).forEach(([category, items]) => {
-    items.forEach((item, index) => {
-      const tr = document.createElement("tr");
-      tr.draggable = true;
-
-      tr.innerHTML = `
+            tr.innerHTML = `
+        <td class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></td>
         <td>${category}</td>
-        <td contenteditable>${item.display_name}</td>
-        <td contenteditable>${item.aliases.join(", ")}</td>
-        <td contenteditable>${item.link}</td>
+        <td contenteditable="true" data-field="display_name">${escapeHtml(item.display_name)}</td>
+        <td contenteditable="true" data-field="aliases">${escapeHtml(item.aliases.join(", "))}</td>
+        <td contenteditable="true" data-field="link"><a href="${item.link}" target="_blank"><i class="fa-solid fa-link"></i></a> ${escapeHtml(item.link)}</td>
+        <td>
+          <button class="danger delete-btn"><i class="fa-solid fa-trash"></i></button>
+        </td>
       `;
 
-      tr.ondragstart = e => {
-        e.dataTransfer.setData("text/plain", index);
-        tr.dataset.category = category;
-      };
-
-      tr.ondragover = e => e.preventDefault();
-
-      tr.ondrop = e => {
-        const from = Number(e.dataTransfer.getData("text/plain"));
-        const to = index;
-
-        const arr = yamlData[category];
-        const moved = arr.splice(from, 1)[0];
-        arr.splice(to, 0, moved);
-
-        renderTable();
-      };
-
-      tbody.appendChild(tr);
+            // Event Listeners for this row
+            attachRowEvents(tr, category, index);
+            els.tbody.appendChild(tr);
+        });
     });
-  });
 }
 
-/* ------------------ MODAL ------------------ */
+function attachRowEvents(tr, category, index) {
+    // 1. Live Editing
+    const inputs = tr.querySelectorAll('[contenteditable]');
+    inputs.forEach(td => {
+        td.onblur = (e) => {
+            const field = td.dataset.field;
+            let val = td.innerText.trim();
 
-addBtn.onclick = () => {
-  modalCategory.innerHTML = "";
-  Object.keys(yamlData).forEach(cat => {
-    const opt = document.createElement("option");
-    opt.value = cat;
-    opt.textContent = cat;
-    modalCategory.appendChild(opt);
-  });
-
-  modalDisplayName.value = "";
-  modalAliases.value = "";
-  modalLink.value = "";
-
-  modal.hidden = false;
-};
-
-modalCancel.onclick = () => {
-  modal.hidden = true;
-};
-
-modalSave.onclick = () => {
-  const category = modalCategory.value;
-  const entry = {
-    display_name: modalDisplayName.value.trim(),
-    aliases: modalAliases.value
-      .split(",")
-      .map(a => a.trim().toLowerCase())
-      .filter(Boolean),
-    link: modalLink.value.trim()
-  };
-
-  yamlData[category].push(entry);
-  modal.hidden = true;
-  renderTable();
-};
-
-/* ------------------ VALIDATION ------------------ */
-
-function validateSchema(data) {
-  const errors = [];
-
-  Object.entries(data).forEach(([cat, items]) => {
-    items.forEach((item, i) => {
-      if (!item.display_name) errors.push(`${cat}[${i}]: display_name missing`);
-      if (!item.aliases?.length) errors.push(`${cat}[${i}]: aliases empty`);
-      try {
-        new URL(item.link);
-      } catch {
-        errors.push(`${cat}[${i}]: invalid link`);
-      }
+            // Update State
+            if (field === 'aliases') {
+                const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+                yamlData[category][index].aliases = arr;
+            } else {
+                yamlData[category][index][field] = val;
+            }
+        };
     });
-  });
 
-  return errors;
-}
-
-function findDuplicateAliases(data) {
-  const seen = new Map();
-  const warnings = [];
-
-  Object.entries(data).forEach(([cat, items]) => {
-    items.forEach(item => {
-      item.aliases.forEach(alias => {
-        if (seen.has(alias)) {
-          warnings.push(`Alias "${alias}" duplicated`);
-        } else {
-          seen.set(alias, true);
+    // 2. Delete
+    tr.querySelector('.delete-btn').onclick = () => {
+        if (confirm(`Delete "${yamlData[category][index].display_name}"?`)) {
+            yamlData[category].splice(index, 1);
+            // Clean up empty categories if desired
+            if (yamlData[category].length === 0) delete yamlData[category];
+            renderTable(els.searchInput.value);
         }
-      });
-    });
-  });
+    };
 
-  return warnings;
+    // 3. Drag & Drop
+    tr.ondragstart = e => {
+        e.dataTransfer.setData("application/json", JSON.stringify({ category, index }));
+        tr.classList.add("dragging");
+    };
+    tr.ondragend = () => tr.classList.remove("dragging");
+
+    tr.ondragover = e => e.preventDefault(); // Allow dropping
+
+    tr.ondrop = e => {
+        e.preventDefault();
+        const dragData = JSON.parse(e.dataTransfer.getData("application/json"));
+        const sourceCat = dragData.category;
+        const sourceIdx = dragData.index;
+
+        // Target (where we dropped)
+        const targetCat = category; // from closure
+        const targetIdx = index;    // from closure
+
+        // Remove from source
+        const [movedItem] = yamlData[sourceCat].splice(sourceIdx, 1);
+
+        // Cleanup source cat if empty
+        if (yamlData[sourceCat].length === 0 && sourceCat !== targetCat) {
+            delete yamlData[sourceCat];
+        }
+
+        // Insert into target
+        if (!yamlData[targetCat]) yamlData[targetCat] = [];
+        yamlData[targetCat].splice(targetIdx, 0, movedItem);
+
+        renderTable(els.searchInput.value);
+    };
 }
+
+els.searchInput.oninput = (e) => renderTable(e.target.value);
+
+/* ------------------ MODAL ACTIONS ------------------ */
+els.addBtn.onclick = () => {
+    // Populate datalist with existing categories
+    els.categoryList.innerHTML = "";
+    Object.keys(yamlData).forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        els.categoryList.appendChild(opt);
+    });
+
+    // Clear inputs
+    els.modalCategory.value = "";
+    els.modalDisplayName.value = "";
+    els.modalAliases.value = "";
+    els.modalLink.value = "";
+
+    els.modal.hidden = false;
+};
+
+els.modalCancel.onclick = () => els.modal.hidden = true;
+
+els.modalSave.onclick = () => {
+    const cat = els.modalCategory.value.trim();
+    const name = els.modalDisplayName.value.trim();
+    const aliases = els.modalAliases.value.split(',').map(a => a.trim().toLowerCase()).filter(Boolean);
+    const link = els.modalLink.value.trim();
+
+    if (!cat || !name || !link) {
+        alert("Please fill in Category, Display Name, and Link.");
+        return;
+    }
+
+    // Duplicate Check
+    const allAliases = [];
+    Object.values(yamlData).flat().forEach(i => allAliases.push(...i.aliases));
+    const conflicts = aliases.filter(a => allAliases.includes(a));
+
+    if (conflicts.length > 0) {
+        if (!confirm(`Warning: The alias(es) "${conflicts.join(', ')}" already exist. Add anyway?`)) {
+            return;
+        }
+    }
+
+    const newItem = { display_name: name, aliases, link };
+
+    if (!yamlData[cat]) yamlData[cat] = [];
+    yamlData[cat].push(newItem);
+
+    els.modal.hidden = true;
+    renderTable(els.searchInput.value);
+};
 
 /* ------------------ SAVE ------------------ */
+els.saveBtn.onclick = async () => {
+    if (!confirm("Are you sure you want to save changes to the repository?")) return;
 
-saveBtn.onclick = async () => {
-  const errors = validateSchema(yamlData);
-  if (errors.length) {
-    alert("Errors:\n" + errors.join("\n"));
-    return;
-  }
-
-  const warnings = findDuplicateAliases(yamlData);
-  if (warnings.length) {
-    const proceed = confirm(
-      "Warnings:\n" + warnings.join("\n") + "\n\nSave anyway?"
-    );
-    if (!proceed) return;
-  }
-
-  const yamlText = dumpYaml(yamlData);
-  const branch = await createBranch(token, baseSha);
-
-  await commitFile(
-    token,
-    branch,
-    yamlText,
-    "Update bot mappings via editor",
-    fileSha
-  );
-
-  await openPR(token, branch);
-  alert("Pull request created");
+    setLoading(true, "Committing changes...");
+    try {
+        const yamlStr = dumpYaml(yamlData);
+        await saveToMain(token, yamlStr, fileSha, "Update commands.yaml via Editor");
+        alert("Saved successfully!");
+        // Reload to get new SHA
+        await loadData();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to save: " + err.message);
+        setLoading(false);
+    }
 };
+
+/* ------------------ UTILS ------------------ */
+function setLoading(isLoading, text = "") {
+    els.loader.hidden = !isLoading;
+    els.loaderText.textContent = text;
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

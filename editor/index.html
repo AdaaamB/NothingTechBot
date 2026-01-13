@@ -1,68 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Bot Mappings Editor</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <title>Bot Mappings Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
+
 <body>
-  <header>
-    <h1>Bot Mappings Editor</h1>
-    <button id="loginBtn">Login with GitHub</button>
-    <span id="userInfo"></span>
-  </header>
+    <header>
+        <div class="header-left">
+            <h1><i class="fa-solid fa-robot"></i> Bot Commands Editor</h1>
+        </div>
+        <div class="header-right">
+            <span id="userInfo" hidden></span>
+            <button id="loginBtn"><i class="fa-brands fa-github"></i> Login with GitHub</button>
+            <button id="logoutBtn" hidden>Logout</button>
+        </div>
+    </header>
 
-  <main hidden id="app">
-    <table id="mappingsTable">
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Display Name</th>
-          <th>Aliases</th>
-          <th>Link</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <main hidden id="app">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Filter commands..." />
+            </div>
+            <div class="actions">
+                <button id="addBtn" class="primary"><i class="fa-solid fa-plus"></i> Add Command</button>
+                <button id="saveBtn" class="success"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+            </div>
+        </div>
 
-    <div class="actions">
-      <button id="addBtn">Add Entry</button>
-      <button id="saveBtn">Save (Create PR)</button>
+        <div class="table-container">
+            <table id="mappingsTable">
+                <thead>
+                    <tr>
+                        <th width="50"></th>
+                        <th width="150">Category</th>
+                        <th>Display Name</th>
+                        <th>Aliases (comma separated)</th>
+                        <th>Link</th>
+                        <th width="80">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="modal" class="modal" hidden>
+        <div class="modal-content">
+            <h2>Add New Command</h2>
+
+            <label>
+                Category
+                <input list="categoryList" id="modalCategory" placeholder="Select or type new..." />
+                <datalist id="categoryList"></datalist>
+            </label>
+
+            <label>
+                Display Name
+                <input id="modalDisplayName" placeholder="e.g. Reboot Guide" />
+            </label>
+
+            <label>
+                Aliases
+                <input id="modalAliases" placeholder="e.g. reboot, restart, boot" />
+                <small>Comma-separated values</small>
+            </label>
+
+            <label>
+                Link
+                <input id="modalLink" placeholder="https://..." />
+            </label>
+
+            <div class="modal-actions">
+                <button id="modalSave" class="primary">Add Command</button>
+                <button id="modalCancel" class="secondary">Cancel</button>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <!-- Add/Edit Modal -->
-  <div id="modal" class="modal" hidden>
-    <div class="modal-content">
-      <h2>Add Mapping</h2>
-
-      <label>
-        Category
-        <select id="modalCategory"></select>
-      </label>
-
-      <label>
-        Display Name
-        <input id="modalDisplayName" />
-      </label>
-
-      <label>
-        Aliases (comma-separated)
-        <input id="modalAliases" />
-      </label>
-
-      <label>
-        Link
-        <input id="modalLink" />
-      </label>
-
-      <div class="modal-actions">
-        <button id="modalSave">Add</button>
-        <button id="modalCancel">Cancel</button>
-      </div>
+    <div id="loadingOverlay" class="loading-overlay" hidden>
+        <div class="spinner"></div>
+        <p id="loadingText">Processing...</p>
     </div>
-  </div>
 
-  <script type="module" src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
+
 </html>

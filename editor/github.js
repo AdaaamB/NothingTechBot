@@ -1,115 +1,86 @@
 const CLIENT_ID = "Ov23liyqmUB7D5ZzIEMo";
 const REPO = "AdaaamB/NothingTechBot";
-const FILE_PATH = "commands.yaml";
+const FILE_PATH = "commands.yaml"; // Defined in root as per prompt
 
 export function login() {
-  const redirectUri = window.location.origin + window.location.pathname;
-  const scopes = "repo read:user";
+    const redirectUri = window.location.origin + window.location.pathname;
+    const scopes = "repo read:user";
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&response_type=token`;
+}
 
-  window.location.href =
-    `https://github.com/login/oauth/authorize` +
-    `?client_id=${CLIENT_ID}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&scope=${encodeURIComponent(scopes)}` +
-    `&response_type=token`;
+export function logout() {
+    localStorage.removeItem("gh_token");
+    window.location.href = window.location.origin + window.location.pathname;
 }
 
 export function getAccessToken() {
-  if (window.location.hash.includes("access_token")) {
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const token = params.get("access_token");
-    localStorage.setItem("gh_token", token);
-    window.location.hash = "";
-    return token;
-  }
-  return localStorage.getItem("gh_token");
+    // Check URL first
+    const params = new URLSearchParams(window.location.search);
+    // GitHub implicit flow returns token in hash usually, but let's check hash
+    if (window.location.hash.includes("access_token=")) {
+        const hash = window.location.hash.substring(1);
+        const hashParams = new URLSearchParams(hash);
+        const token = hashParams.get("access_token");
+        if (token) {
+            localStorage.setItem("gh_token", token);
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return token;
+        }
+    }
+    return localStorage.getItem("gh_token");
 }
 
 export async function getUser(token) {
-  const res = await fetch("https://api.github.com/user", {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  return res.json();
+    const res = await fetch("https://api.github.com/user", {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Failed to fetch user");
+    return res.json();
 }
 
 export async function isCollaborator(username, token) {
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/collaborators/${username}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  console.log("Collaborator check status:", res.status);
-  return res.status === 204;
+    const res = await fetch(`https://api.github.com/repos/${REPO}/collaborators/${username}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.status === 204;
 }
 
 export async function loadYaml(token) {
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  const json = await res.json();
-  return {
-    content: atob(json.content),
-    sha: json.sha
-  };
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error("Failed to load YAML file");
+    const json = await res.json();
+    // Handle UTF-8 decoding properly
+    const content = new TextDecoder().decode(Uint8Array.from(atob(json.content), c => c.charCodeAt(0)));
+    return { content, sha: json.sha };
 }
 
-export async function getMainSha(token) {
-  const res = await fetch(
-    `https://api.github.com/repos/${REPO}/git/ref/heads/main`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  const json = await res.json();
-  return json.object.sha;
-}
+export async function saveToMain(token, content, oldSha, message) {
+    // 1. Encode content to Base64 (UTF-8 safe)
+    const binaryStr = new TextEncoder().encode(content).reduce((a, b) => a + String.fromCharCode(b), '');
+    const b64Content = btoa(binaryStr);
 
-export async function createBranch(token, baseSha) {
-  const name = `editor-${Date.now()}`;
+    // 2. PUT to file path
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message,
+            content: b64Content,
+            sha: oldSha, // Required to update existing file
+            branch: "main" // Direct commit
+        })
+    });
 
-  await fetch(`https://api.github.com/repos/${REPO}/git/refs`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      ref: `refs/heads/${name}`,
-      sha: baseSha
-    })
-  });
-
-  return name;
-}
-
-export async function commitFile(token, branch, content, message, sha) {
-  await fetch(
-    `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message,
-        content: btoa(content),
-        branch,
-        sha
-      })
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Save failed");
     }
-  );
-}
 
-export async function openPR(token, branch) {
-  await fetch(`https://api.github.com/repos/${REPO}/pulls`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title: "Update bot mappings",
-      head: branch,
-      base: "main"
-    })
-  });
+    return res.json();
 }

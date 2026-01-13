@@ -1,0 +1,214 @@
+:root {
+    --primary: #2da44e;
+    --danger: #cf222e;
+    --bg: #f6f8fa;
+    --border: #d0d7de;
+    --text: #24292f;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 50px;
+}
+
+header {
+    background: #24292f;
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+header button {
+    cursor: pointer;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.search-box {
+    position: relative;
+}
+.search-box input {
+    padding: 8px 12px 8px 30px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 250px;
+}
+.search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    font-weight: 600;
+    cursor: pointer;
+}
+button.primary {
+    background: #0969da;
+    color: white;
+    border: none;
+}
+button.success {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+button.danger {
+    background: var(--danger);
+    color: white;
+    border: none;
+}
+button.secondary {
+    background: #f3f4f6;
+}
+
+/* Table */
+.table-container {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #f6f8fa;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: #57606a;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eaecef;
+    vertical-align: middle;
+}
+
+td[contenteditable="true"] {
+    background: #fff;
+    transition: background 0.2s;
+}
+td[contenteditable="true"]:focus {
+    background: #fff8c5;
+    outline: 2px solid #0969da;
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+
+tr:hover td {
+    background: #f8f9fa;
+}
+
+/* Drag & Drop */
+.drag-handle {
+    cursor: grab;
+    color: #bbb;
+    text-align: center;
+}
+tr.dragging {
+    opacity: 0.5;
+    background: #eef;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+.modal-content label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+.modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Loader */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
