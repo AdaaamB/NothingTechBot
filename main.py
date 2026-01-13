@@ -90,9 +90,21 @@ except Exception as e:
   print(f"Encountered an exception during startup: {e}")
   quit()
 
-COMMANDS_PATH = "commands.yaml"
-COMMANDS_DATA = {}
-COMMANDS_MTIME = 0
+commands_path = "commands.yaml"
+commands_data = {}
+commands_mtime = 0
+
+def load_commands_if_updated():
+  global commands_data, commands_mtime
+  try:
+    current_mtime = os.path.getmtime(commands_path)
+    if current_mtime > commands_mtime:
+      with open(commands_path, "r") as f:
+        commands_data = yaml.safe_load(f)
+      commands_mtime = current_mtime
+      logger.info(f"Reloaded {commands_path} (modified at {current_mtime})")
+  except Exception as e:
+      logger.error(f"Error loading YAML: {e}")
 
 def send_reply(comment, response):
   response = response.replace("<user>", f"u/{comment.author.name}")
@@ -349,9 +361,9 @@ while True:
           logger.info(f"Command type: {command_type}, checking if quoted")
           if not is_command_quoted(body, f"!{command_type}"):
             logger.info(f"Not quoted, doing {command_type} command")
-            with open("commands.json", "r") as j:
-              json_data = json.load(j)
-              search_data = json_data[command_type]
+            
+            load_commands_if_updated()
+            search_data = commands_data.get(command_type, [])
 
             response = link_commands(command_type, search_data, body)
             
