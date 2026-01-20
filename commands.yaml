@@ -482,6 +482,24 @@ link:
       - NothingTech wiki
     display_name: r/NothingTech Wiki
     link: https://nothing.wiki
+  - display_name: Nothing Playground
+    aliases:
+      - playground
+      - nothing playground
+      - playground.nothing.tech
+      - essential apps
+      - essential widgets
+      - build widgets
+      - widget builder
+      - camera presets
+      - camera preset
+      - glyph toys
+      - community glyph toys
+      - eq presets
+      - equaliser presets
+      - eq
+      - equalizer presets
+    link: https://playground.nothing.tech
 wiki:
   - aliases:
       - app icons
@@ -495,6 +513,7 @@ wiki:
       - black & white icons
       - icon pack
       - nothing icon pack
+      - icons
     display_name: Nothing Icon Pack
     link: https://nothing.wiki/faq/nothing-os/#wiki_how_to_make_app_icons_monochrome_.2F_black_and_white
   - aliases:
@@ -513,3 +532,357 @@ wiki:
       - the nfc icon
     display_name: The NFC Icon
     link: https://nothing.wiki/faq/nothing-os/#wiki_what_is_this_icon_in_my_status_bar.3F_.28squares_with_inner_circle.29
+  - display_name: Hide status bar icons
+    aliases:
+      - hide icons
+      - hide status bar icons
+      - status bar icon
+      - hide icon
+      - hide status bar icon
+      - status bar icon
+      - status bar
+      - customise status bar
+      - customize status bar
+    link: https://nothing.wiki/faq/nothing-os/#wiki_how_to_hide_status_bar_icons
+  - display_name: Customise lock screen
+    aliases:
+      - lock screen clock
+      - lockscreen clock
+      - change lock screen clock
+      - change lockscreen clock
+      - lockscreen widgets
+      - lock screen widgets
+      - customise lock screen
+      - customise lockscreen
+      - customize lock screen
+      - customize lockscreen
+    link: https://nothing.wiki/faq/nothing-os/#wiki_how_to_change_the_lock_screen_clock_.2F_how_to_add_lock_screen_widgets
+  - display_name: Change system font
+    aliases:
+      - inter
+      - roboto
+      - system font
+      - change system font
+      - change os font
+      - os font
+      - select system font
+      - select font
+    link: https://nothing.wiki/faq/nothing-os/#wiki_how_to_change_system_font
+  - display_name: Enable NDot font
+    aliases:
+      - ndot
+      - enable ndot font
+      - enable ndot
+      - ndot font
+      - dot font
+      - dot matrix font
+    link: https://nothing.wiki/faq/nothing-os/#wiki_how_to_enable_the_ndot_font
+  - display_name: Forgotten PIN / Private Space password
+    aliases:
+      - forgot pin
+      - forgotten pin
+      - forgot private space password
+      - private space password
+      - private space password reset
+      - forgotten pin / private space password
+    link: https://nothing.wiki/faq/nothing-os/#wiki_i_forgot_my_phone_pin_.2F_i_forgot_my_private_space_password
+  - display_name: Unknown lock screen alarm
+    aliases:
+      - unknown alarm
+      - random alarm
+      - app alarm
+      - unknown alarm time showing
+      - lock screen alarm
+      - unknown lock screen alarm
+    link: https://nothing.wiki/faq/nothing-os/#wiki_random_alarm_time_showing_on_lock_screen_.2F_quick_look_widget
+  - display_name: Best Nothing phone chargers
+    aliases:
+      - charger
+      - chargers
+      - charger questions
+      - charger question
+      - which charger
+      - best charger
+      - best chargers
+      - phone chargers
+      - phone charger
+      - best phone chargers
+      - best phone charger
+    link: https://nothing.wiki/faq/phone/#wiki_which_charger_is_best_to_use_with_my_nothing_phone.3F
+  - display_name: Phone/camera rattling
+    aliases:
+      - rattle
+      - rattling
+      - ois
+      - camera rattle
+      - camera rattling
+      - phone rattle
+      - phone rattling
+      - ois rattle
+      - ois rattling
+      - phone/camera rattling
+    link: https://nothing.wiki/faq/phone/#wiki_why_is_my_phone_rattling_.2F_why_is_my_camera_rattling.3F
+  - display_name: Glyph Matrix interaction
+    aliases:
+      - glyph matrix interaction
+      - glyph toy interaction
+      - glyph toys interaction
+      - interact with glyph matrix
+      - interact with matrix
+      - interact with glyph toy
+      - interact with glyph toys
+      - enable glyph matrix
+      - glyph toy
+      - glyph toys
+    link: https://nothing.wiki/faq/phone-3/#wiki_how_do_i_interact_with_the_glyph_matrix_.2F_glyph_toys.3F
+  - display_name: Choosing & Reordering Glyph Toys
+    aliases:
+      - choosing glyph toys
+      - choose glyph toys
+      - customise glyph toys
+      - customize glyph toys
+      - reorder toys
+      - reorder glyph toys
+      - reorder glyph matrix
+      - add glyph toys
+      - add glyph toy
+    link: https://nothing.wiki/faq/phone-3/#wiki_how_do_i_choose_which_glyph_toys_i_want_to_use.3F
+  - display_name: Using Glyph Mirror
+    aliases:
+      - using glyph mirror
+      - glyph mirror
+      - glyph matrix mirror
+      - matrix mirror
+      - glyph mirror selfie
+      - glyph selfie
+      - matrix selfie
+      - use glyph mirror
+    link: https://nothing.wiki/faq/phone-3/#wiki_how_do_i_use_glyph_mirror.3F
+  - display_name: Community Glyph Toys
+    aliases:
+      - community glyph toys
+      - download more glyph toys
+      - download glyph toys
+      - download glyph toy
+      - matrix glyph toys
+      - glyph matrix toys
+      - community matrix
+      - community matrix app
+      - community matrix project
+      - community glyph toys
+      - community glyph toy
+    link: https://nothing.wiki/library/glyph-projects/#wiki_community_glyph_matrix_toys
+  - display_name: Ear not charging / unequal discharge
+    aliases:
+      - ear charging
+      - ear discharging
+      - unequal discharge
+      - ear not charging
+      - ear battery
+      - ear battery drain
+      - ear not charging / unequal discharge
+    link: >-
+      https://nothing.wiki/faq/ear/#wiki_why_are_my_buds_not_charging_.2F_discharging_equally.3F_one_bud_drains_faster_than_the_other.
+  - display_name: Change Ear name
+    aliases:
+      - change ear name
+      - change bluetooth name
+      - bluetooth name
+      - change buds name
+    link: https://nothing.wiki/faq/ear/#wiki_how_to_change_the_name_of_nothing_ear_devices.3F
+  - display_name: u/NothingTechBot + commands
+    aliases:
+      - bot commands
+      - bot
+      - commands
+      - all bot commands
+      - view bot commands
+      - nothingtechbot
+      - subreddit bot
+      - nothingtech bot
+      - u/nothingtechbot
+      - u/nothingtechbot commands
+      - u/nothingtechbot + commands
+    link: https://nothing.wiki/faq/reddit/bot/
+  - display_name: Set your user flair
+    aliases:
+      - flair
+      - user flair
+      - name flair
+      - device flair
+      - flairing
+      - user flairing
+      - name flairing
+      - device flairing
+      - set flair
+      - set user flair
+      - set a user flair
+      - set your user flair
+    link: https://nothing.wiki/faq/reddit/#wiki_how_to_add_devices_to_my_flair_.2F_how_to_show_devices_next_to_my_name.3F
+  - display_name: Why was my post removed
+    aliases:
+      - post removed
+      - thread removed
+      - comment removed
+      - removed
+      - post removal
+      - why was my post removed
+      - removals
+      - removal reasons
+    link: https://nothing.wiki/faq/reddit/#wiki_why_was_my_post_removed.3F
+  - display_name: Become a subreddit moderator
+    aliases:
+      - become a mod
+      - mod application
+      - subreddit mod
+      - mod apply
+      - become a subreddit mod
+      - become a moderator
+      - moderator application
+      - subreddit moderator
+      - moderator apply
+      - become a subreddit moderator
+    link: https://nothing.wiki/faq/reddit/#wiki_how_do_i_become_a_moderator.3F
+  - display_name: Why is there more than one subreddit
+    aliases:
+      - two subreddits
+      - 2 subreddits
+      - two subs
+      - 2 subs
+      - multiple subreddits
+      - multiple subs
+      - why is there more than one subreddit
+    link: https://nothing.wiki/faq/reddit/#wiki_why_is_there_more_than_one_nothing_subreddit.3F
+  - display_name: Nothing OS FAQ
+    aliases:
+      - nothing os
+      - nothingos
+      - nothing-os
+      - nos
+      - nothing os faq
+      - os faq
+      - os
+      - nos faq
+      - nothingos faq
+      - faq os
+      - faq nothing os
+      - faq nothingos
+    link: https://nothing.wiki/faq/nothing-os
+  - display_name: Nothing Phone (3) FAQ
+    aliases:
+      - phone 3
+      - np3
+      - nothing phone 3
+      - phone 3 faq
+      - faq phone 3
+      - glyph matrix
+      - matrix faq
+      - glyph matrix faq
+    link: https://nothing.wiki/faq/phone-3
+  - display_name: Nothing Phone FAQ
+    aliases:
+      - phone
+      - nothing phone
+      - phone faq
+      - faq phone
+    link: https://nothing.wiki/faq/phone
+  - display_name: Nothing Ear FAQ
+    aliases:
+      - ear
+      - audio
+      - buds
+      - ear faq
+      - buds faq
+      - earbuds
+      - earbuds faq
+      - ear buds
+      - ear buds faq
+    link: https://nothing.wiki/faq/ear
+  - display_name: r/NothingTech FAQ
+    aliases:
+      - reddit
+      - subreddit
+      - r/nothingtech
+      - r/nothingtech faq
+      - nothingtech faq
+      - nothing reddit
+      - nothing subreddit
+      - subreddit faq
+    link: https://nothing.wiki/faq/reddit
+  - display_name: FAQ index
+    aliases:
+      - faq
+      - questions
+      - frequently asked questions
+      - frequent questions
+      - faq index
+    link: https://nothing.wiki/faq
+  - display_name: >-
+      devices, list devices, list of devices, models, phones, phone models, ear models, pokemon, products, product
+      names, codenames, product codenames
+    aliases:
+      - nothing device library
+    link: https://nothing.wiki/library/devices/
+  - display_name: Nothing official links
+    aliases:
+      - links
+      - official links
+      - socials
+      - social links
+      - support
+      - support links
+    link: https://nothing.wiki/library/official-links/
+  - display_name: Nothing official apps
+    aliases:
+      - apps
+      - official apps
+      - nothing apps
+      - widgets
+      - community widgets
+      - gallery
+      - weather
+      - glyph composer
+    link: https://nothing.wiki/library/official-apps/
+  - display_name: Nothing community apps
+    aliases:
+      - community apps
+      - custom apps
+      - unofficial apps
+    link: https://nothing.wiki/library/community-apps/
+  - display_name: Nothing community glyph tools
+    aliases:
+      - glyph tools
+      - custom glyph
+      - custom ringtones
+      - glyph maker
+      - glyph creator
+    link: https://nothing.wiki/library/glyph-tools
+  - display_name: Other Nothing community projects
+    aliases:
+      - projects
+      - community projects
+      - community creations
+      - community links
+      - unofficial projects
+      - unofficial links
+      - other nothing community projects
+      - other community projects
+    link: https://nothing.wiki/library/community-projects/
+  - display_name: Resource Library index
+    aliases:
+      - library
+      - resource library
+      - lib
+      - resource library index
+    link: https://nothing.wiki/library/
+  - display_name: r/NothingTech Megathread Archive
+    aliases:
+      - megathreads
+      - megathread
+      - megathread archive
+      - megathread directory
+      - mega threads
+      - r/nothingtech megathread archive
+      - r/nothingtech megathreads
+      - r/nothingtech megathread directory
+    link: https://nothing.wiki/megathreads/
