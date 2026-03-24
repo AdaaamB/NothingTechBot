@@ -893,7 +893,7 @@ firmware:
       - unbrick
       - rollback
     display_name: Restore or Downgrade Stock Nothing OS Firmware
-    link: https://github.com/spike0en/nothing_archive#flashing-the-stock-rom-using-fastboot
+    link: https://spike0en.github.io/nothing_archive/docs/guides#flashing-stock-rom-unbrick--downgrade
   - aliases:
       - flashing script
       - nothing flasher
@@ -903,7 +903,7 @@ firmware:
       - ota images
       - stock rom
     display_name: Community Maintained Stock Nothing OS Firmware Repository
-    link: https://github.com/spike0en/nothing_archive
+    link: https://spike0en.github.io/nothing_archive/docs/firmware
   - aliases:
       - ota
       - ota update
@@ -911,9 +911,9 @@ firmware:
       - sideload update
       - update manually
     display_name: Sideload Nothing OS Updates
-    link: https://github.com/spike0en/nothing_archive#ota-sideloading
+    link: https://spike0en.github.io/nothing_archive/docs/guides#ota-sideloading
   - aliases:
       - root
       - rooting
     display_name: Rooting Guide For Nothing & CMF Devices
-    link: https://github.com/spike0en/nothing_archive#rooting
+    link: https://spike0en.github.io/nothing_archive/docs/guides#rooting
