@@ -182,7 +182,7 @@ def link_commands(type, search_data, comment_body):
         return ("You can view all of Nothing's official links here: https://reddit.com/mod/NothingTech/wiki/library/official-links\n\n"
               "You can also use this command to find specific links, e.g. `!link phone (3a)` or `!link nothing discord`.")
     elif type == "firmware":
-        return ("You can view the main community-maintained stock Nothing OS Firmware Repository here: https://github.com/spike0en/nothing_archive\n\n"
+        return ("You can view the main community-maintained stock Nothing OS Firmware Repository here: https://spike0en.github.io/nothing_archive\n\n"
               "You can also use this command to find specific topics, e.g. `!firmware root` or `!firmware unbrick`.")  
       
   argument = sanitise_command(argument)
