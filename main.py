@@ -1,4 +1,4 @@
-import praw, time, json, logging, traceback, configparser, difflib, re, string, yaml, os
+import praw, time, json, logging, traceback, configparser, difflib, re, string, yaml, os, requests, threading
 from datetime import date
 from praw.models import Submission
 
@@ -19,6 +19,9 @@ try:
     log_level_file = config['log_level_file']
     log_level_api = config['log_level_api']
     log_retain_days = config['log_retain_days']
+
+    github_raw_url = config['github_raw_url']
+    github_fetch_interval_seconds = config['github_fetch_interval_seconds']
 
     logging.basicConfig(level=log_level_terminal, format='%(asctime)s %(levelname)s: %(message)s')
     today = date.today()
@@ -93,6 +96,28 @@ except Exception as e:
 commands_path = "commands.yaml"
 commands_data = {}
 commands_mtime = 0
+
+def fetch_yaml_from_github():
+  while True:
+    try:
+      response = requests.get(github_raw_url, timeout=10)
+      response.raise_for_status()
+      new_content = response.text
+
+      with open(commands_path, 'r') as f:
+        current_content = f.read()
+
+      if new_content != current_content:
+        with open(commands_path, 'w') as f:
+          f.write(new_content)
+        logger.info("commands.yaml updated from GitHub")
+      else:
+        logger.debug("commands.yaml fetched, no changes on GitHub")
+
+    except Exception as e:
+      logger.error(f"Failed to fetch commands.yaml from GitHub: {e}")
+
+    time.sleep(github_fetch_interval_seconds)
 
 def load_commands_if_updated():
   global commands_data, commands_mtime
@@ -245,10 +270,15 @@ def link_commands(type, search_data, comment_body):
       footer = config_wiki['link_no_match_footer'] if type == "link" else config_wiki['wiki_no_match_footer']
       return f"I couldn't find a link for `{argument}` and no similar matches were found. If you think this is wrong, contact the mods.\n\n{footer}"
 
+# start the GitHub fetcher thread
+fetcher_thread = threading.Thread(target = fetch_yaml_from_github, daemon = True)
+fetcher_thread.start()
+logger.info("GitHub YAML fetcher thread started")
+
 while True:
   try:
     # for all comments in the subreddit
-    for comment in subreddit.stream.comments(skip_existing=True):
+    for comment in subreddit.stream.comments(skip_existing = True):
         body = comment.body.lower()
         file_handler = logging.FileHandler(f'logs/log-{today.strftime("%Y-%m-%d")}.log')
         logger.info(f"Found comment in {subreddit}, {comment.id} in {comment.submission.id}")

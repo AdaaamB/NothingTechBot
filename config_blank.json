@@ -3,13 +3,17 @@
     "client_secret": "",
     "reddit_username": "",
     "reddit_password": "",
+    "twofa_enabled": false,
 
     "subreddit": "adbotest",
-    "support_flair_template_id": "ad1b585e-e8e4-11ed-9e23-627699e68715",
-    "solved_flair_template_id": "ba9d946a-e8e4-11ed-ad9e-7e7ed620b423",
-    "thanks_wiki_page": "index",
-    "support_regex_match_wiki_page": "support_regex_match",
-    "support_regex_exclude_wiki_page": "support_regex_exclude",
+    "solved_flair_template_ids": {
+        "adbotest": "ba9d946a-e8e4-11ed-ad9e-7e7ed620b423",
+        "CMSTech": "8ed93f98-67b1-11f0-9aa0-0e91e14f12ca"
+    },
+    "bot_config_wiki_page": "bot_config",
+
+    "github_raw_url": "https://raw.githubusercontent.com/rNothingTech/NothingTechBot/main/commands.yaml",
+    "github_fetch_interval_seconds": 300,
 
     "bool_send_response": true,
 
