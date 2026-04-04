@@ -289,6 +289,14 @@ app:
       - live wallpaper
     display_name: Dot Battery Live Wallpaper by RapidZapper
     link: https://play.google.com/store/apps/details?id=com.lisra.dotbattery
+  - display_name: The Circle - Language Network
+    aliases:
+      - the circle
+      - the circle language network
+      - the circle language
+      - circle
+      - language app
+    link: https://play.google.com/store/apps/details?id=com.quivaconnect.thecircle
 link:
   - aliases:
       - phone (1)
